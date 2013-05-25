@@ -96,7 +96,14 @@
 			<artifactId>spring-orm</artifactId>
 			<version>3.0.2.RELEASE</version>
 		</dependency>
+		<!-- PgSQL Database Driver -->
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.0-801.jdbc4</version>
+		</dependency>
 	</dependencies>
+	
 
 
 </project>
