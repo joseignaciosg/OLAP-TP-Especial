@@ -1,11 +1,8 @@
 package olap.olap.project.model;
 
-import java.util.HashSet;
-import java.util.Set;
 
-public class Level {
+public class Level extends PropertyHolder {
 
-	private Set<Property> properties = new HashSet<Property>();
 	private String name;
 	private int pos;
 	
@@ -15,14 +12,6 @@ public class Level {
 		this.pos = pos;
 	}
 
-	public void addProperty(Property p) {
-		properties.add(p);
-	}
-	
-	public Set<Property> getProperties() {
-		return properties;
-	}
-	
 	public String getName() {
 		return name;
 	}
@@ -31,6 +20,9 @@ public class Level {
 		return pos;
 	}
 	
-	
+	public void print() {
+		System.out.println("LEVEL: "+name+" pos: "+pos);
+		printProps();
+	}
 	
 }

@@ -3,12 +3,12 @@ package olap.olap.project.model;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Hierachy {
+public class Hierarchy {
 
 	private String name;
 	private Set<Level> levels = new HashSet<Level>();
 	
-	public Hierachy(String name) {
+	public Hierarchy(String name) {
 		this.name = name;
 	}
 
@@ -22,6 +22,13 @@ public class Hierachy {
 	
 	public Set<Level> getLevels() {
 		return levels;
+	}
+	
+	public void print() {
+		System.out.println("HIER: "+name);
+		for (Level l :levels) {
+			l.print();
+		}
 	}
 }
 

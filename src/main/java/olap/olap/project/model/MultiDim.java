@@ -1,27 +1,29 @@
 package olap.olap.project.model;
 
-import java.awt.Dimension;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MultiDim {
 	
-	private Set<Dimension> dimensions = new HashSet<Dimension>();
-	private String name;
-	
-	public MultiDim(String name) {
-		this.name = name;
-	}
-	
+	private Map<String, Dimension> dimensions = new HashMap<String, Dimension>();
+		
 	public void addDimension(Dimension dim) {
-		dimensions.add(dim);
+		dimensions.put(dim.getName().toLowerCase(), dim);
 	}
 
-	public Set<Dimension> getDimensions() {
-		return dimensions;
+	public Collection<Dimension> getDimensions() {
+		return dimensions.values();
+	}
+	
+	public Dimension getDimension(String ptr) {
+		return dimensions.get(ptr.toLowerCase());
 	}
 
-	public String getName() {
-		return name;
+	public void print() {
+		System.out.println("MULTIDIM: ");
+		for(Dimension d: dimensions.values()) {
+			d.print();
+		}
 	}
 }

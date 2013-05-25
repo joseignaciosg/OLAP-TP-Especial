@@ -1,9 +1,9 @@
 package olap.olap.project.model;
 
-import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class Cube {
@@ -31,9 +31,18 @@ public class Cube {
 	public Set<Measure> getMeasures() {
 		return measures;
 	}
-
 	
 	public String getName() {
 		return name;
+	}
+	
+	public void print() {
+		System.out.println("CUBE: " +name);
+		for(Measure m: measures) {
+			m.print();
+		}
+		for(Entry<String, Dimension> e : dimensions.entrySet()) {
+			System.out.println("DIM: " +e.getKey() + ": " + e.getValue().getName());
+		}
 	}
 }

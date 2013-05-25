@@ -5,7 +5,7 @@ public class Property {
 	private String type, name;
 	private boolean isPK;
 	
-	public Property(String type, String name, boolean isPK) {
+	public Property(String name, String type, boolean isPK) {
 		this.type = type;
 		this.name = name;
 		this.isPK = isPK;
@@ -21,7 +21,9 @@ public class Property {
 		return isPK;
 	}
 	
-	
+	public void print() {
+		System.out.println("PROP: "+name+", type:" + type + (isPK? "PK" :""));
+	}
 	
 }
 

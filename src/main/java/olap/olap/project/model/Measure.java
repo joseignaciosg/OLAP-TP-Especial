@@ -23,5 +23,8 @@ public class Measure {
 		return agg;
 	}
 	
+	public void print() {
+		System.out.println("MEASURE: " +name +", type: " +type+", agg: "+agg);
+	}
 	
 }
