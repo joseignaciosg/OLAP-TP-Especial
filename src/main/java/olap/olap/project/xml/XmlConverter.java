@@ -17,13 +17,13 @@ import org.dom4j.io.XMLWriter;
 @SuppressWarnings("unchecked")
 public class XmlConverter {
 
-	MultiDim multiDim = new MultiDim();
 	
-	public Document parse(File xml) throws DocumentException, IOException {
+	public MultiDim parse(File xml) throws DocumentException, IOException {
+		MultiDim multiDim = new MultiDim();
 		SAXReader reader = new SAXReader();
 		Document in = reader.read(xml);
-		Cube cube = null;
 		Element multidim = in.getRootElement();
+		Cube cube =null;
 		Iterator<Element> i = multidim.elementIterator();
 		Element cubeElement = null;
 		while (i.hasNext()) {
@@ -31,30 +31,29 @@ public class XmlConverter {
             if (e.getName().equals("cubo")) {
             	cubeElement = e;
             } else if (e.getName().equals("dimension")){
-            	parseDimension(e);
+            	parseDimension(multiDim, e);
             } else {
             	throw new RuntimeException("invalid " + e.getName() +" dimension or cube tags only accepted");
             }
         }
-		cube = parseCube(cubeElement);
-		cube.print();
+		parseCube(multiDim, cubeElement);
 //		multiDim.print();
-		
-		Document out = DocumentHelper.createDocument();
-
-		Element schema = out.addElement("Schema");
-//		Element cube = schema.addElement("Cube");
-		Element table = schema.addElement("Table");
-
-		XMLWriter writer = new XMLWriter(
-				new FileWriter( "output.xml" )
-				);
-		writer.write(out);
-		writer.close();
-		return out;
+		return multiDim;
+//		Document out = DocumentHelper.createDocument();
+//
+//		Element schema = out.addElement("Schema");
+////		Element cube = schema.addElement("Cube");
+//		Element table = schema.addElement("Table");
+//
+//		XMLWriter writer = new XMLWriter(
+//				new FileWriter( "output.xml" )
+//				);
+//		writer.write(out);
+//		writer.close();
+//		return out;
 	}
 	
-	private Cube parseCube(Element c) {
+	private void parseCube(MultiDim multiDim, Element c) {
 		Cube cube = new Cube(c.attributeValue("name"));
 		Iterator<Element> i = c.elementIterator();
 		while (i.hasNext()) {
@@ -72,10 +71,10 @@ public class XmlConverter {
             	throw new RuntimeException("invalid " + e.getName() +" measure or dimension tags only accepted");
             }
 		}
-		return cube;
+		multiDim.setCube(cube);
 	}
 	
-	private void parseDimension(Element dimension) {
+	private void parseDimension(MultiDim multiDim, Element dimension) {
 		Dimension dim = new Dimension(dimension.attributeValue("name"));
 		Iterator<Element> i = dimension.elementIterator();
 		while(i.hasNext()) {

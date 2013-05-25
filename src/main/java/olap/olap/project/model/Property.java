@@ -22,7 +22,7 @@ public class Property {
 	}
 	
 	public void print() {
-		System.out.println("PROP: "+name+", type:" + type + (isPK? "PK" :""));
+		System.out.println("PROP: "+name+", type:" + type + (isPK? " PK" :""));
 	}
 	
 }

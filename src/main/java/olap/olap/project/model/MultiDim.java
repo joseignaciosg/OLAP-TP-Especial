@@ -7,7 +7,21 @@ import java.util.Map;
 public class MultiDim {
 	
 	private Map<String, Dimension> dimensions = new HashMap<String, Dimension>();
-		
+	private Cube cube;
+
+	public MultiDim() {}
+	public MultiDim(Cube cube) {
+		this.cube = cube;
+	}
+	
+	public Cube getCube() {
+		return cube;
+	}
+
+	public void setCube(Cube cube) {
+		this.cube = cube;
+	}
+
 	public void addDimension(Dimension dim) {
 		dimensions.put(dim.getName().toLowerCase(), dim);
 	}
