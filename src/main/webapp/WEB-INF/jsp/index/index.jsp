@@ -10,18 +10,11 @@
 
 <br />
 
+<h1>Olap Project:tu mundo olap</h1>
 <table>
 	<tr>
 		<td>
-			<div class="hero-unit" style="text-align: center;">
-				<h1>Olap</h1>
-				<br />
-				<p>Tu mundo olap.</p>
-			</div>
-			<p align="center">
-				<a class="btn btn-primary btn-large" href="${ basePath }/user/passChange"
-					style="align: center;"> Querés fiesta </a>
-			</p>
+			
 		</td>
 	</tr>
 </table>

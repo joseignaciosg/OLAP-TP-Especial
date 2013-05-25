@@ -27,17 +27,5 @@
 	<script type="text/javascript" src="<%=request.getContextPath()%>/assets/js/application.js"></script>
 </head>
 <body>
-<!-- 	<div class="navbar navbar-fixed-top"> -->
-<!-- 		<div class="navbar-inner"> -->
-<!-- 			<div class="container"> -->
-<%-- 				<jsp:include page="navbar.jsp"></jsp:include> --%>
-<!-- 			</div> -->
-<!-- 		</div> -->
-<!-- 	</div> -->
-<!-- 	<div class="container" id="errors"> -->
-<%-- 		<jsp:include page="errors.jsp"></jsp:include> --%>
-<!-- 	</div> -->
-<!-- 	<div class="container" id="success"> -->
-<%-- 		<jsp:include page="success.jsp"></jsp:include> --%>
-<!-- 	</div> -->
+
 	<div class="container" id="main">
