@@ -16,20 +16,18 @@
 		<td>
 			<div>
 				<form:form name="uploadxmlform" class="form-horizontal span8 offset2"
-					action="editPhoto" method="POST" enctype="multipart/form-data"
+					action="uploadXml" method="POST" enctype="multipart/form-data"
 					commandName="uploadxmlform">
 					<form:errors path="*" />
 					<fieldset>
 						<legend> </legend>
 						<div class="control-group">
-							<label class="control-label" for="profile_photo">Documento XML Multidim </label>
+							<label class="control-label" for="xml_doc">Documento XML Multidim </label>
 							<div class="controls">
 								<form:input type="file" class="input-xlarge" id="photo"
-									name="profile_photo" path="file" />
+									name="xml_doc" path="file" />
 							</div>
 						</div>
-
-						<input type="hidden" name="event" value="${event.id}" />
 						<div class="form-actions">
 							<input type="submit" class="btn btn-primary" value="Subir documento " />
 						</div>
