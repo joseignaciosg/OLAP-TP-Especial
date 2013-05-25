@@ -7,10 +7,11 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import olap.olap.project.model.MultiDim;
+import olap.olap.project.model.db.TableCreator;
 import olap.olap.project.web.command.UploadXmlForm;
 import olap.olap.project.xml.XmlConverter;
 
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
@@ -60,7 +61,8 @@ public class IndexController {
 			}
 			
 			//TODO levantar las tablas y crear el archivo
-			Document xmlDocument = parser.parse(tmpFile);
+			MultiDim xmlDocument = parser.parse(tmpFile);
+			xmlDocument.print();
 			
 		}
 		mav.setViewName("redirect:" + req.getServletPath()
@@ -72,6 +74,7 @@ public class IndexController {
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView show_tables() throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
+		TableCreator tc = new TableCreator();
 		return mav;
 	}
 
