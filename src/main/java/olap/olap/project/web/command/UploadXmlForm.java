@@ -1,6 +1,6 @@
 package olap.olap.project.web.command;
 
-import java.io.IOException;
+import java.io.File;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +19,5 @@ public class UploadXmlForm {
 		return file;
 	}
 
-	
-	
 	
 }
