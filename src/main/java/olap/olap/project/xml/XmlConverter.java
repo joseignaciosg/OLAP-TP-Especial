@@ -4,8 +4,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
-import olap.olap.project.model.*;
+import olap.olap.project.model.Cube;
+import olap.olap.project.model.Dimension;
+import olap.olap.project.model.Hierarchy;
+import olap.olap.project.model.Level;
+import olap.olap.project.model.Measure;
+import olap.olap.project.model.MultiDim;
+import olap.olap.project.model.Property;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -16,14 +23,15 @@ import org.dom4j.io.XMLWriter;
 
 @SuppressWarnings("unchecked")
 public class XmlConverter {
-
 	
+	/**
+	 * Converts a xmlFile to a MultiDim 
+	 */
 	public MultiDim parse(File xml) throws DocumentException, IOException {
 		MultiDim multiDim = new MultiDim();
 		SAXReader reader = new SAXReader();
 		Document in = reader.read(xml);
 		Element multidim = in.getRootElement();
-		Cube cube =null;
 		Iterator<Element> i = multidim.elementIterator();
 		Element cubeElement = null;
 		while (i.hasNext()) {
@@ -39,18 +47,57 @@ public class XmlConverter {
 		parseCube(multiDim, cubeElement);
 //		multiDim.print();
 		return multiDim;
-//		Document out = DocumentHelper.createDocument();
-//
-//		Element schema = out.addElement("Schema");
-////		Element cube = schema.addElement("Cube");
-//		Element table = schema.addElement("Table");
-//
-//		XMLWriter writer = new XMLWriter(
-//				new FileWriter( "output.xml" )
-//				);
-//		writer.write(out);
-//		writer.close();
-//		return out;
+	}
+	
+	/**
+	 * Converts a MultiDim to a GeoMondrian XML
+     * Hay que leer bien http://mondrian.pentaho.com/documentation/schema.php#Star_schemas creo q no hice las cosas muy bien
+     * igual esta x la mitad
+	 */
+	public void generateXml(MultiDim multiDim) throws IOException {
+		Document out = DocumentHelper.createDocument();
+
+		Element schema = out.addElement("Schema");
+		Element cubeElem = schema.addElement("Cube");
+		Cube cube = multiDim.getCube();
+		cubeElem.addAttribute("name", cube.getName());
+		Element table = cubeElem.addElement("Table");
+		
+		for (Measure m : cube.getMeasures()) {
+			Element measure = cubeElem.addElement("measure");
+			measure.addAttribute("aggregator", m.getAgg());
+			measure.addAttribute("name", m.getName());
+			measure.addAttribute("datatype", m.getType());
+		}
+		for (Entry<String, Dimension> entry : cube.getDimensions().entrySet()) {
+			Element dim = cubeElem.addElement("dimension");
+			Dimension dimension = entry.getValue();
+			dim.addAttribute("name", entry.getKey());
+			for(Hierarchy h : dimension.getHierarchies()) {
+				handleHierarchy(dim, h);
+			}
+		}
+		XMLWriter writer = new XMLWriter(
+				new FileWriter( "output.xml" )
+				);
+		writer.write(out);
+		writer.close();
+	}
+	
+	private void handleHierarchy(Element dim, Hierarchy h) {
+		Element hierarchy = dim.addElement("hierarchy");
+		hierarchy.addAttribute("name", h.getName());
+		for(Level l : h.getLevels()) {
+			handleLevel(hierarchy, l);
+		}
+	}
+	
+	private void handleLevel(Element hierarchy, Level l) {
+		for(Property p : l.getProperties()) {
+			Element level = hierarchy.addElement("level");
+			level.addAttribute("name", l.getName()+"-"+p.getName());
+			level.addAttribute("column", l.getName()+"-"+p.getName());
+		}
 	}
 	
 	private void parseCube(MultiDim multiDim, Element c) {
@@ -80,7 +127,9 @@ public class XmlConverter {
 		while(i.hasNext()) {
 			Element e = i.next();
 			if(e.getName().equals("level")) {
-				parseProperties(dim, e);
+				Level level = new Level(dim.getName(), 0);
+				parseProperties(level, e);
+				dim.setLevel(level);
 			} else if(e.getName().equals("hierarchy")) {
 				pasreHierarchy(dim, e);
 			} else {
@@ -90,8 +139,8 @@ public class XmlConverter {
 		multiDim.addDimension(dim);
 	}
 
-	private void parseProperties(PropertyHolder ph, Element level) {
-		Iterator<Element> i = level.elementIterator();
+	private void parseProperties(Level level, Element levelElem) {
+		Iterator<Element> i = levelElem.elementIterator();
 		while(i.hasNext()) {
 			Element prop = i.next();
 			boolean id;
@@ -101,7 +150,7 @@ public class XmlConverter {
 				id = false;
 			}
 			Property property = new Property(prop.getText(), prop.attributeValue("type"), id);
-			ph.addProperty(property);
+			level.addProperty(property);
 		}
 	}
 	
@@ -119,6 +168,7 @@ public class XmlConverter {
 	
 	public static void main(String[] args) throws DocumentException, IOException {
 		XmlConverter xml = new XmlConverter();
-		xml.parse(new File("in2.xml"));
+		MultiDim multiDim = xml.parse(new File("in2.xml"));
+		xml.generateXml(multiDim);
 	}
 }
