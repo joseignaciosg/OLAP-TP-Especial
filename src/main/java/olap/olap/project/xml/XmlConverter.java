@@ -54,7 +54,7 @@ public class XmlConverter {
      * Hay que leer bien http://mondrian.pentaho.com/documentation/schema.php#Star_schemas creo q no hice las cosas muy bien
      * igual esta x la mitad
 	 */
-	public void generateXml(MultiDim multiDim) throws IOException {
+	public void generateXml(MultiDim multiDim, String fileName) throws IOException {
 		Document out = DocumentHelper.createDocument();
 
 		Element schema = out.addElement("Schema");
@@ -78,7 +78,7 @@ public class XmlConverter {
 			}
 		}
 		XMLWriter writer = new XMLWriter(
-				new FileWriter( "output.xml" )
+				new FileWriter( fileName )
 				);
 		writer.write(out);
 		writer.close();
@@ -168,7 +168,7 @@ public class XmlConverter {
 	
 	public static void main(String[] args) throws DocumentException, IOException {
 		XmlConverter xml = new XmlConverter();
-		MultiDim multiDim = xml.parse(new File("in2.xml"));
-		xml.generateXml(multiDim);
+		MultiDim multiDim = xml.parse(new File("in/in2.xml"));
+		xml.generateXml(multiDim, "out/output.xml");
 	}
 }
