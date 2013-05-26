@@ -61,7 +61,7 @@ public class XmlConverter {
 		Element cubeElem = schema.addElement("Cube");
 		Cube cube = multiDim.getCube();
 		cubeElem.addAttribute("name", cube.getName());
-		Element table = cubeElem.addElement("Table");
+		//Element table = cubeElem.addElement("Table");
 		
 		for (Measure m : cube.getMeasures()) {
 			Element measure = cubeElem.addElement("measure");
@@ -149,7 +149,7 @@ public class XmlConverter {
 			} else {
 				id = false;
 			}
-			Property property = new Property(prop.getText(), prop.attributeValue("type"), id);
+			Property property = new Property(prop.getText().replaceAll("\\s",""), prop.attributeValue("type"), id);
 			level.addProperty(property);
 		}
 	}
