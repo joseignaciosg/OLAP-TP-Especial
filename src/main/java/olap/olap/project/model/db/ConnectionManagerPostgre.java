@@ -89,4 +89,9 @@ public class ConnectionManagerPostgre implements ConnectionManager {
 
 	}
 
+	public Connection getConnectionWithCredentials() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
