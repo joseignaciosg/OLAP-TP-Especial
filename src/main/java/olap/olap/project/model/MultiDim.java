@@ -1,6 +1,5 @@
 package olap.olap.project.model;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,8 +25,8 @@ public class MultiDim {
 		dimensions.put(dim.getName().toLowerCase(), dim);
 	}
 
-	public Collection<Dimension> getDimensions() {
-		return dimensions.values();
+	public Map<String, Dimension> getDimensions() {
+		return dimensions;
 	}
 	
 	public Dimension getDimension(String ptr) {

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import olap.olap.project.model.Attribute;
 import olap.olap.project.model.Cube;
 import olap.olap.project.model.Dimension;
 import olap.olap.project.model.Hierarchy;
@@ -56,26 +57,28 @@ public class XmlConverter {
 	 */
 	public void generateXml(MultiDim multiDim, String fileName) throws IOException {
 		Document out = DocumentHelper.createDocument();
-
+		out = out.addDocType("Schema", null, "mondrian.dtd");
 		Element schema = out.addElement("Schema");
-		Element cubeElem = schema.addElement("Cube");
-		Cube cube = multiDim.getCube();
-		cubeElem.addAttribute("name", cube.getName());
-		//Element table = cubeElem.addElement("Table");
-		
-		for (Measure m : cube.getMeasures()) {
-			Element measure = cubeElem.addElement("measure");
-			measure.addAttribute("aggregator", m.getAgg());
-			measure.addAttribute("name", m.getName());
-			measure.addAttribute("datatype", m.getType());
-		}
-		for (Entry<String, Dimension> entry : cube.getDimensions().entrySet()) {
-			Element dim = cubeElem.addElement("dimension");
+		schema.addAttribute("name",multiDim.getCube().getName());
+		for (Entry<String, Dimension> entry : multiDim.getDimensions().entrySet()) {
+			Element dim = schema.addElement("Dimension");
 			Dimension dimension = entry.getValue();
 			dim.addAttribute("name", entry.getKey());
 			for(Hierarchy h : dimension.getHierarchies()) {
 				handleHierarchy(dim, h);
 			}
+		}
+		Element cubeElem = schema.addElement("Cube");
+		Cube cube = multiDim.getCube();
+		cubeElem.addAttribute("name", cube.getName());
+		Element tableElem = cubeElem.addElement("Relation");
+		//Element table = cubeElem.addElement("Table");
+		
+		for (Measure m : cube.getMeasures()) {
+			Element measure = cubeElem.addElement("Measure");
+			measure.addAttribute("aggregator", m.getAgg());
+			measure.addAttribute("name", m.getName());
+			measure.addAttribute("datatype", Attribute.valueOf(m.getType().toUpperCase()).toString());
 		}
 		XMLWriter writer = new XMLWriter(
 				new FileWriter( fileName )
@@ -85,7 +88,8 @@ public class XmlConverter {
 	}
 	
 	private void handleHierarchy(Element dim, Hierarchy h) {
-		Element hierarchy = dim.addElement("hierarchy");
+		Element hierarchy = dim.addElement("Hierarchy");
+		hierarchy.addAttribute("hasAll", "true");
 		hierarchy.addAttribute("name", h.getName());
 		for(Level l : h.getLevels()) {
 			handleLevel(hierarchy, l);
@@ -94,7 +98,7 @@ public class XmlConverter {
 	
 	private void handleLevel(Element hierarchy, Level l) {
 		for(Property p : l.getProperties()) {
-			Element level = hierarchy.addElement("level");
+			Element level = hierarchy.addElement("Level");
 			level.addAttribute("name", l.getName()+"-"+p.getName());
 			level.addAttribute("column", l.getName()+"-"+p.getName());
 		}
