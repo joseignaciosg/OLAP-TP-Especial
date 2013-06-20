@@ -84,10 +84,6 @@ public class XmlConverter {
 			}
 		}
 
-		
-//		XMLWriter writer = new XMLWriter(new FileWriter( fileName ));
-//		writer.write(out);
-//		writer.close();
 
 		return out;
 	}

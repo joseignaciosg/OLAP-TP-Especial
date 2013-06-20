@@ -143,13 +143,9 @@ public class IndexController {
 		/*getting table names*/
 		List<String> tableNames = ca.getDBTableNames();
 		mav.addObject("tableNames", tableNames);
-		System.out.println(tableNames);
-		
-		System.out.println("preint gsndfjkhadljfhn");
-		
+				
 		/*getting cube dimensions*/
 		Collection<Dimension> dimensions = ca.getCubeDimensions();
-		System.out.println(dimensions);
 		mav.addObject("dimensions", dimensions);
 		return mav;
 	}
@@ -159,8 +155,6 @@ public class IndexController {
 		final ModelAndView mav = new ModelAndView();
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
-		
-		
 		
 		return mav;
 	}
@@ -185,9 +179,6 @@ public class IndexController {
         writer.write(outXml);
 		out.flush();
 		out.close();
-        
-        
-        
 		return mav;
 	}
 	
