@@ -16,28 +16,20 @@
 <br />
 
 
-<h2><b>Paso 1: </b> Seleccione las tablas apropiadas de su base de datos</h2>
+<h2><b>Paso 2: </b> Seleccione las campos apropiados para tada tabla</h2>
 
 
 
 
 <form:form method="POST" class="form-horizontal span8 offset2"
-	action="manualModeUpdateTables">
-	
-	<!-- FACT TABLE -->
-	<h4>Fact Table:</h4>
-	<select name="facttable">
-		<c:forEach var="name" items="${tableNames}" varStatus="status">
-			<option value="${name}" label="${name}" />
-		</c:forEach>
-	</select>
-	 <br><br>
-	
-	<!-- DIMENSION TABLES -->
-	<c:forEach var="dim" items="${dimensions}" varStatus="status1">
+	action="manualModeUpdateFieldsPost">
+		
+	<!-- for each Table -->
+	<c:forEach var="dim" items="${dimensions}" varStatus="status">
 		<h4>${dim.name}</h4> 
-		<select name="dim${status1.count}">
-			<c:forEach var="name" items="${tableNames}" varStatus="status2">
+		<select name="algo">
+			<!-- for each Field -->
+			<c:forEach var="name" items="${tableNames}" varStatus="status">
 				<option value="${name}" label="${name}" />
 			</c:forEach>
 		</select> 

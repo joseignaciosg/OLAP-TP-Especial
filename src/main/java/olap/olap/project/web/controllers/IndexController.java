@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -135,6 +136,7 @@ public class IndexController {
 	}
 	
 	
+	/*MANUAL MODE STEP 1 POST*/
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView manualMode(final HttpServletRequest req) throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView();
@@ -147,7 +149,6 @@ public class IndexController {
 			mav.addObject("error", error);
 		}
 		
-		
 		/*getting table names*/
 		List<String> tableNames = ca.getDBTableNames();
 		mav.addObject("tableNames", tableNames);
@@ -158,14 +159,22 @@ public class IndexController {
 		return mav;
 	}
 	
+	/*MANUAL MODE STEP 1*/
 	@RequestMapping(method = RequestMethod.POST)
-	protected ModelAndView manualModeUpdateTables(final HttpServletRequest req) throws SQLException, Exception {
+	protected ModelAndView manualModeUpdateTables( final HttpServletRequest req) throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView("index/manualMode");
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
 		
+		Map<String,String> values = req.getParameterMap();
+		
+		System.out.println("MAP :" + values);
+		
+		
 		//TODO link dimension for each of the table names
 		//ca.linkDimension(cubeDim, dbTableName);
+		
+
 		boolean valid = false;
 		if (valid) {
 			
@@ -175,9 +184,33 @@ public class IndexController {
 			return mav;
 		}
 		return this.manualMode(req);
-		
-		
 	}
+	
+	/*MANUAL MODE STEP 2 FORM*/
+	@RequestMapping(method = RequestMethod.GET)
+	protected ModelAndView manualModeUpdateFields(final HttpServletRequest req) throws SQLException, Exception {
+		final ModelAndView mav = new ModelAndView();	
+		return mav;
+	}
+	
+	/*MANUAL MODE STEP 2*/
+	@RequestMapping(method = RequestMethod.POST)
+	protected ModelAndView manualModeUpdateFieldsPost(final HttpServletRequest req) throws SQLException, Exception {
+		final ModelAndView mav = new ModelAndView("index/manualMode");
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
+		
+		boolean valid = false;
+		if (valid) {
+			
+		} else {
+			mav.addObject("error", "Una de las asignaciones no es v&aacute;lida" );
+			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualMode");
+			return mav;
+		}
+		return this.manualMode(req);
+	}
+	
 	
 	@RequestMapping(method = RequestMethod.POST)
 	protected ModelAndView downloadStarXml(final HttpServletResponse response,
