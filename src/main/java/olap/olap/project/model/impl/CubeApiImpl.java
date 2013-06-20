@@ -3,14 +3,20 @@ package olap.olap.project.model.impl;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import olap.olap.project.model.Dimension;
+import olap.olap.project.model.Hierarchy;
+import olap.olap.project.model.Level;
 import olap.olap.project.model.Measure;
 import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.Property;
@@ -50,7 +56,7 @@ public class CubeApiImpl implements CubeApi {
 		XmlConverter xml = new XmlConverter();
 
 		try {
-
+			createDimensions();
 			createFactTable();
 
 		} catch (Exception e) {
@@ -61,15 +67,23 @@ public class CubeApiImpl implements CubeApi {
 		return xml.generateXml(multiDim, outFileName);
 	}
 
-	public List<Dimension> getCubeDimensions() {
-		// TODO Auto-generated method stub
-		return (ArrayList<Dimension>) multiDim.getCube().getDimensions()
+	public Collection<Dimension> getCubeDimensions() {
+		System.out.println(multiDim.getCube().getDimensions().values());
+		return (Collection<Dimension>) multiDim.getCube().getDimensions()
 				.values();
 	}
 
-	public List<String> getDBTableNames() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> getDBTableNames() throws Exception {
+		final Connection conn = connectionManager
+				.getConnectionWithCredentials();
+		DatabaseMetaData dbmd = conn.getMetaData();
+		List<String> names = new ArrayList<String>();
+		String[] types = { "TABLE" };
+		ResultSet rs = dbmd.getTables(null, null, "%", types);
+		while (rs.next()) {
+			names.add(rs.getString("TABLE_NAME"));
+		}
+		return names;
 	}
 
 	public boolean linkDimension(Dimension cubeDim, String dbTableName) {
@@ -86,19 +100,16 @@ public class CubeApiImpl implements CubeApi {
 		final Connection conn = connectionManager
 				.getConnectionWithCredentials();
 
-		Map<Integer, String> parameters = new HashMap<Integer, String>();
-		int key = 1;
+		// Map<Integer, String> parameters = new HashMap<Integer, String>();
+		// int key = 1;
 		// -----------------------------------------
 		// PREPARO EL STATEMENT
-		String query = "CREATE TABLE ? { \n";
-		parameters.put(key++, multiDim.getCube().getName());
+		String query = "CREATE TABLE " + multiDim.getCube().getName() + " (\n";
 		// -----------------------------------------
 		// AGREGO LAS MEASURES
 
 		for (Measure m : multiDim.getCube().getMeasures()) {
-			parameters.put(key++, m.getName());
-			parameters.put(key++, m.getType());
-			query += "? ? ,\n";
+			query += m.getName() + " " + m.getType() + " ,\n";
 		}
 		// -----------------------------------------
 		// AGREGO LAS DIMENSIONES Y LAS FOREIGN KEYS
@@ -110,11 +121,9 @@ public class CubeApiImpl implements CubeApi {
 			Set<Property> properties = d.getLevel().getProperties();
 			for (Property p : properties) {
 				if (p.isPK()) {
-					parameters.put(key++, s + "_" + p.getName());
-					parameters.put(key++, p.getType());
-					parameters.put(key++, d.getName());
-					parameters.put(key++, p.getName());
-					query += "? ? REFERENCES ?(?),\n";
+					query += s + "_" + p.getName() + " " + p.getType()
+							+ " REFERENCES " + d.getName() + "(" + p.getName()
+							+ "),\n";
 				}
 			}
 		}
@@ -127,30 +136,21 @@ public class CubeApiImpl implements CubeApi {
 			Set<Property> properties = d.getLevel().getProperties();
 			for (Property p : properties) {
 				if (p.isPK()) {
-					parameters.put(key++, s + "_" + p.getName());
 					if (!first) {
-						query += ",?";
+						query += "," + p.getName();
 					} else {
-						query += "?";
+						query += p.getName();
 						first = false;
 					}
 
 				}
 			}
 		}
-		query += " );\n";
+		query += " )\n)";
 		// -----------------------------------------
 		// PRINTEO LA QUERY
-		System.out.println(query);
-		for (int i = 1; i < key; i++) {
-			System.out.println(i + ": " + parameters.get(i));
-		}
-		PreparedStatement statement = conn.prepareStatement(query,
-				PreparedStatement.RETURN_GENERATED_KEYS);
 
-		for (int i = 1; i < key; i++) {
-			statement.setString(i, parameters.get(i));
-		}
+		PreparedStatement statement = conn.prepareStatement(query);
 
 		System.out.println("-----------------------------");
 
@@ -160,7 +160,52 @@ public class CubeApiImpl implements CubeApi {
 
 	}
 
-	private void createDimensions() {
+	private void createDimensions() throws Exception {
 
+		final Connection conn = connectionManager
+				.getConnectionWithCredentials();
+		boolean first = true;
+		Collection<Dimension> dimensions = multiDim.getCube().getDimensions()
+				.values();
+
+		Set<Dimension> nonRepeat = new HashSet<Dimension>(dimensions);
+		for (Dimension d : nonRepeat) {
+			first = true;
+
+			String query = "CREATE TABLE " + d.getName() + " (\n";
+			Level level = d.getLevel();
+			for (Property p : level.getProperties()) {
+
+				query += p.getName() + " " + p.getType() + " , \n";
+			}
+			for (Hierarchy h : d.getHierarchies()) {
+				for (Level l : h.getLevels()) {
+					for (Property p : l.getProperties()) {
+						query += p.getName() + " " + p.getType() + " , \n";
+					}
+				}
+			}
+			query += "PRIMARY KEY( ";
+			for (Property p : level.getProperties()) {
+				if (p.isPK()) {
+					if (!first) {
+						query += ", " + p.getName();
+					} else {
+						query += p.getName();
+						first = false;
+					}
+				}
+			}
+			query += ") \n)";
+			PreparedStatement statement = conn.prepareStatement(query);
+			System.out.println("-----------------------------");
+
+			System.out.println(statement.toString());
+			System.out.println(d.getPropertyQty());
+			// statement.execute();
+
+		}
+
+		connectionManager.closeConnection(conn);
 	}
 }

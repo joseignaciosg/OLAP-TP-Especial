@@ -3,12 +3,16 @@ package olap.olap.project.web.controllers;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import olap.olap.project.model.Dimension;
 import olap.olap.project.model.api.CubeApi;
 import olap.olap.project.web.command.DBCredentialsForm;
 import olap.olap.project.web.command.UploadXmlForm;
@@ -68,7 +72,6 @@ public class IndexController {
 			return mav;
 		} else {
 			try {
-				//TableCreator tc = new TableCreator(form.getUrl_db(), form.getUser_db(), form.getPassword_db());
 				ca.setDBCredentials(form.getUrl_db(), form.getUser_db(), form.getPassword_db());
 			} catch (Exception e) {
 				mav.addObject("couldNotConnectToDB", true);
@@ -132,17 +135,54 @@ public class IndexController {
 	}
 	
 	
-	@RequestMapping(method = RequestMethod.POST)
-	protected ModelAndView manualMode() throws ServletException, IOException {
+	@RequestMapping(method = RequestMethod.GET)
+	protected ModelAndView manualMode(final HttpServletRequest req) throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView();
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
+		
+		String error = (String) req.getParameter("error");
+		System.out.println("eroajdhjas" +error);
+		if( error !=  null){
+			mav.addObject("error", error);
+		}
+		
+		
+		/*getting table names*/
+		List<String> tableNames = ca.getDBTableNames();
+		mav.addObject("tableNames", tableNames);
+				
+		/*getting cube dimensions*/
+		Collection<Dimension> dimensions = ca.getCubeDimensions();
+		mav.addObject("dimensions", dimensions);
 		return mav;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST)
+	protected ModelAndView manualModeUpdateTables(final HttpServletRequest req) throws SQLException, Exception {
+		final ModelAndView mav = new ModelAndView("index/manualMode");
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
+		
+		//TODO link dimension for each of the table names
+		//ca.linkDimension(cubeDim, dbTableName);
+		boolean valid = false;
+		if (valid) {
+			
+		} else {
+			mav.addObject("error", "Una de las asignaciones no es v&aacute;lida" );
+			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualMode");
+			return mav;
+		}
+		return this.manualMode(req);
+		
+		
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
 	protected ModelAndView downloadStarXml(final HttpServletResponse response,
 			final HttpServletRequest req) throws ServletException, IOException {
 		
-		System.out.println("INSIDE downloadStarXml!!!!!");
 		final ModelAndView mav = new ModelAndView();
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
@@ -159,11 +199,10 @@ public class IndexController {
         writer.write(outXml);
 		out.flush();
 		out.close();
-        
-        
-        
 		return mav;
 	}
+
+	
 	
 	
 
