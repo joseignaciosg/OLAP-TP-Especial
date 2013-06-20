@@ -135,11 +135,19 @@ public class IndexController {
 	}
 	
 	
-	@RequestMapping(method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView manualMode(final HttpServletRequest req) throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView();
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
+		
+		String error = (String) req.getParameter("error");
+		System.out.println("eroajdhjas" +error);
+		if( error !=  null){
+			mav.addObject("error", error);
+		}
+		
+		
 		/*getting table names*/
 		List<String> tableNames = ca.getDBTableNames();
 		mav.addObject("tableNames", tableNames);
@@ -152,11 +160,23 @@ public class IndexController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	protected ModelAndView manualModeUpdateTables(final HttpServletRequest req) throws SQLException, Exception {
-		final ModelAndView mav = new ModelAndView();
+		final ModelAndView mav = new ModelAndView("index/manualMode");
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
 		
-		return mav;
+		//TODO link dimension for each of the table names
+		//ca.linkDimension(cubeDim, dbTableName);
+		boolean valid = false;
+		if (valid) {
+			
+		} else {
+			mav.addObject("error", "Una de las asignaciones no es v&aacute;lida" );
+			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualMode");
+			return mav;
+		}
+		return this.manualMode(req);
+		
+		
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
@@ -181,6 +201,8 @@ public class IndexController {
 		out.close();
 		return mav;
 	}
+
+	
 	
 	
 

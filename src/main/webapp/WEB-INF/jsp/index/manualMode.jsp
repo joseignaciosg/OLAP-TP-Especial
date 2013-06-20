@@ -7,6 +7,12 @@
 
 <jsp:include page="../shared/header.jsp"></jsp:include>
 
+
+<c:if test="${not empty error}">
+	<div class="alert">
+  		<strong>Error!</strong> ${error}
+	</div>
+</c:if>
 <br />
 
 
