@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +19,7 @@ import olap.olap.project.model.db.ConnectionManager;
 import olap.olap.project.model.db.ConnectionManagerPostgreWithCredentials;
 import olap.olap.project.xml.XmlConverter;
 
+import org.dom4j.Document;
 import org.dom4j.DocumentException;
 
 public class CubeApiImpl implements CubeApi {
@@ -45,17 +45,20 @@ public class CubeApiImpl implements CubeApi {
 		multiDim.print();
 	}
 
-	public void generateMDXAuto(String outFileName) throws IOException {
+	public Document generateMDXAuto(String outFileName) throws IOException {
 
 		XmlConverter xml = new XmlConverter();
-		xml.generateXml(multiDim, outFileName);
 
 		try {
+
 			createFactTable();
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		return xml.generateXml(multiDim, outFileName);
 	}
 
 	public List<Dimension> getCubeDimensions() {
