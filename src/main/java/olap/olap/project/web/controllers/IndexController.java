@@ -107,18 +107,45 @@ public class IndexController {
 			
 		}
 		mav.setViewName("redirect:" + req.getServletPath()
-				+ "/index/show_tables");
+				+ "/index/selectMode");
 		System.out.println("----------redirecting !!!!");
 		return mav;
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView show_tables() throws ServletException, IOException {
+	protected ModelAndView selectMode() throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
-		
-		
 //		TableCreator tc = new TableCreator();
 		return mav;
 	}
+	
+	@RequestMapping(method = RequestMethod.POST)
+	protected ModelAndView autoMode() throws ServletException, IOException {
+		final ModelAndView mav = new ModelAndView();
+		//TODO
+//		TableCreator tc = new TableCreator();
+		return mav;
+	}
+	
+	
+	@RequestMapping(method = RequestMethod.POST)
+	protected ModelAndView manualMode() throws ServletException, IOException {
+		final ModelAndView mav = new ModelAndView();
+//		TableCreator tc = new TableCreator();
+		return mav;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST)
+	protected ModelAndView downloadStarXml() throws ServletException, IOException {
+		final ModelAndView mav = new ModelAndView();
+		//TODO codigo para descargar el xml de salida
+//		TableCreator tc = new TableCreator();
+		return mav;
+	}
+	
+	
 
+	
+	
+	
 }
