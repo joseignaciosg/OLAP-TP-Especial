@@ -104,7 +104,7 @@ public class CubeApiImpl implements CubeApi {
 			Set<Property> properties = d.getLevel().getProperties();
 			for (Property p : properties) {
 				if (p.isPK()) {
-					parameters.put(key++, p.getName());
+					parameters.put(key++, d.getName() + "_" + p.getName());
 					parameters.put(key++, p.getType());
 					parameters.put(key++, d.getName());
 					parameters.put(key++, p.getName());
@@ -145,6 +145,10 @@ public class CubeApiImpl implements CubeApi {
 		}
 		statement.execute();
 		connectionManager.closeConnection(conn);
+
+	}
+
+	private void createDimensions() {
 
 	}
 }
