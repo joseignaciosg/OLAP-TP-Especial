@@ -7,11 +7,20 @@
 
 <jsp:include page="../shared/header.jsp"></jsp:include>
 
-
 <br />
 
-<h1>Olap Project: tu mundo olap</h1>
 
-tablulis
+<h2>Tablas creadas y Documento XML modelo estrella generado correctamente</h2>
+
+<form:form name="downloadStarXml" class="form-horizontal span8 offset2" action="manualMode" method="POST">
+	<form:errors path="*" />
+	<fieldset>											
+		<div class="form-actions">
+			<input type="submit" class="btn btn-primary" value="Descargar XML estrella" />
+		</div>
+	</fieldset>
+</form:form>
+
+
 
 <jsp:include page="../shared/footer.jsp"></jsp:include>
