@@ -8,7 +8,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import olap.olap.project.model.MultiDim;
+import olap.olap.project.model.api.CubeApi;
 import olap.olap.project.model.db.TableCreator;
+import olap.olap.project.model.impl.CubeApiImpl;
 import olap.olap.project.web.command.DBCredentialsForm;
 import olap.olap.project.web.command.UploadXmlForm;
 import olap.olap.project.xml.XmlConverter;
@@ -108,20 +110,26 @@ public class IndexController {
 		}
 		mav.setViewName("redirect:" + req.getServletPath()
 				+ "/index/selectMode");
-		System.out.println("----------redirecting !!!!");
 		return mav;
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView selectMode() throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
-//		TableCreator tc = new TableCreator();
+
+		
+		
+		
 		return mav;
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
 	protected ModelAndView autoMode() throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
+//		CubeApi creator = new CubeApiImpl();
+//		creator.setDBCredentials(null, null, null);
+//		creator.loadMultildimXml();
+//		File starXml = creator.generateMDXAuto("out");
 		//TODO
 //		TableCreator tc = new TableCreator();
 		return mav;
