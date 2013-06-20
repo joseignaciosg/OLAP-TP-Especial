@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class CubeApiImpl implements CubeApi {
 
-	Cube cube;
 	MultiDim multiDim;
 	ConnectionManager connectionManager;
 
@@ -43,7 +42,7 @@ public class CubeApiImpl implements CubeApi {
 			IOException {
 		XmlConverter parser = new XmlConverter();
 		multiDim = parser.parse(xmlfile);
-		//for debugging
+		// for debugging
 		multiDim.print();
 	}
 
@@ -53,7 +52,7 @@ public class CubeApiImpl implements CubeApi {
 		xml.generateXml(multiDim, outFileName);
 
 		try {
-//			createFactTable();
+			 createFactTable();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -62,7 +61,8 @@ public class CubeApiImpl implements CubeApi {
 
 	public List<Dimension> getCubeDimensions() {
 		// TODO Auto-generated method stub
-		return (ArrayList<Dimension>) cube.getDimensions().values();
+		return (ArrayList<Dimension>) multiDim.getCube().getDimensions()
+				.values();
 	}
 
 	public List<String> getDBTableNames() {
@@ -89,19 +89,19 @@ public class CubeApiImpl implements CubeApi {
 		// -----------------------------------------
 		// PREPARO EL STATEMENT
 		String query = "CREATE TABLE ? { \n";
-		parameters.put(key++, cube.getName());
+		parameters.put(key++, multiDim.getCube().getName());
 		// -----------------------------------------
 		// AGREGO LAS MEASURES
 
-		for (Measure m : cube.getMeasures()) {
+		for (Measure m : multiDim.getCube().getMeasures()) {
 			parameters.put(key++, m.getName());
 			parameters.put(key, m.getType());
 			query += "? ? ,\n";
 		}
 		// -----------------------------------------
 		// AGREGO LAS DIMENSIONES Y LAS FOREIGN KEYS
-		ArrayList<Dimension> dimensions = (ArrayList<Dimension>) cube
-				.getDimensions().values();
+		ArrayList<Dimension> dimensions = (ArrayList<Dimension>) multiDim
+				.getCube().getDimensions().values();
 		for (Dimension d : dimensions) {
 			Set<Property> properties = d.getLevel().getProperties();
 			for (Property p : properties) {
@@ -145,7 +145,7 @@ public class CubeApiImpl implements CubeApi {
 		for (int i = 1; i < key; i++) {
 			statement.setString(i, parameters.get(i));
 		}
-		statement.execute();
+		//statement.execute();
 		connectionManager.closeConnection(conn);
 
 	}
