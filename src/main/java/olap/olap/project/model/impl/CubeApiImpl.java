@@ -9,11 +9,14 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import olap.olap.project.model.Dimension;
+import olap.olap.project.model.Hierarchy;
+import olap.olap.project.model.Level;
 import olap.olap.project.model.Measure;
 import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.Property;
@@ -53,7 +56,7 @@ public class CubeApiImpl implements CubeApi {
 		XmlConverter xml = new XmlConverter();
 
 		try {
-
+			createDimensions();
 			createFactTable();
 
 		} catch (Exception e) {
@@ -147,18 +150,16 @@ public class CubeApiImpl implements CubeApi {
 				}
 			}
 		}
-		query += " );\n";
+		query += " )\n}; \n";
 		// -----------------------------------------
 		// PRINTEO LA QUERY
-		System.out.println(query);
-		for (int i = 1; i < key; i++) {
-			System.out.println(i + ": " + parameters.get(i));
-		}
+
 		PreparedStatement statement = conn.prepareStatement(query,
 				PreparedStatement.RETURN_GENERATED_KEYS);
 
 		for (int i = 1; i < key; i++) {
 			statement.setString(i, parameters.get(i));
+
 		}
 
 		System.out.println("-----------------------------");
@@ -169,7 +170,62 @@ public class CubeApiImpl implements CubeApi {
 
 	}
 
-	private void createDimensions() {
+	private void createDimensions() throws Exception {
 
+		final Connection conn = connectionManager
+				.getConnectionWithCredentials();
+		boolean first = true;
+		Collection<Dimension> dimensions = multiDim.getCube().getDimensions()
+				.values();
+
+		Set<Dimension> nonRepeat = new HashSet<Dimension>(dimensions);
+		for (Dimension d : nonRepeat) {
+			first = true;
+
+			Map<Integer, String> parameters = new HashMap<Integer, String>();
+			int key = 1;
+			String query = "CREATE TABLE ? { \n";
+			parameters.put(key++, d.getName());
+			Level level = d.getLevel();
+			for (Property p : level.getProperties()) {
+				parameters.put(key++, p.getName());
+				parameters.put(key++, p.getType());
+				query += "? ? , \n";
+			}
+			for (Hierarchy h : d.getHierarchies()) {
+				for (Level l : h.getLevels()) {
+					for (Property p : l.getProperties()) {
+						parameters.put(key++, p.getName());
+						parameters.put(key++, p.getType());
+						query += "? ? , \n";
+					}
+				}
+			}
+			query += "PRIMARY KEY( ";
+			for (Property p : level.getProperties()) {
+				if (p.isPK()) {
+					parameters.put(key++, p.getName());
+					if (!first) {
+						query += ", ?";
+					} else {
+						query += "?";
+						first = false;
+					}
+				}
+			}
+			query += ") \n};";
+			PreparedStatement statement = conn.prepareStatement(query,
+					PreparedStatement.RETURN_GENERATED_KEYS);
+			for (int i = 1; i < key; i++) {
+				statement.setString(i, parameters.get(i));
+			}
+			System.out.println("-----------------------------");
+
+			System.out.println(statement.toString());
+			// statement.execute();
+
+		}
+
+		connectionManager.closeConnection(conn);
 	}
 }
