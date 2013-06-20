@@ -100,8 +100,8 @@ public class CubeApiImpl implements CubeApi {
 		final Connection conn = connectionManager
 				.getConnectionWithCredentials();
 
-		Map<Integer, String> parameters = new HashMap<Integer, String>();
-		int key = 1;
+		// Map<Integer, String> parameters = new HashMap<Integer, String>();
+		// int key = 1;
 		// -----------------------------------------
 		// PREPARO EL STATEMENT
 		String query = "CREATE TABLE " + multiDim.getCube().getName() + " (\n";
@@ -155,7 +155,7 @@ public class CubeApiImpl implements CubeApi {
 		System.out.println("-----------------------------");
 
 		System.out.println(statement.toString());
-		//statement.execute();
+		// statement.execute();
 		connectionManager.closeConnection(conn);
 
 	}
@@ -172,13 +172,10 @@ public class CubeApiImpl implements CubeApi {
 		for (Dimension d : nonRepeat) {
 			first = true;
 
-			Map<Integer, String> parameters = new HashMap<Integer, String>();
-			int key = 1;
 			String query = "CREATE TABLE " + d.getName() + " (\n";
 			Level level = d.getLevel();
 			for (Property p : level.getProperties()) {
-				parameters.put(key++, p.getName());
-				parameters.put(key++, p.getType());
+
 				query += p.getName() + " " + p.getType() + " , \n";
 			}
 			for (Hierarchy h : d.getHierarchies()) {
@@ -203,8 +200,9 @@ public class CubeApiImpl implements CubeApi {
 			PreparedStatement statement = conn.prepareStatement(query);
 			System.out.println("-----------------------------");
 
-			//System.out.println(statement.toString());
-			statement.execute();
+			System.out.println(statement.toString());
+			System.out.println(d.getPropertyQty());
+			// statement.execute();
 
 		}
 
