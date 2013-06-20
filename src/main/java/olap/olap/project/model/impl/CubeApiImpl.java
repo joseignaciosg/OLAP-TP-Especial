@@ -3,7 +3,9 @@ package olap.olap.project.model.impl;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -65,15 +67,21 @@ public class CubeApiImpl implements CubeApi {
 		return xml.generateXml(multiDim, outFileName);
 	}
 
-	public List<Dimension> getCubeDimensions() {
-		// TODO Auto-generated method stub
-		return (ArrayList<Dimension>) multiDim.getCube().getDimensions()
-				.values();
+	public Collection<Dimension> getCubeDimensions() {
+		System.out.println(multiDim.getCube().getDimensions().values());
+		return  (Collection<Dimension>) multiDim.getCube().getDimensions().values();
 	}
 
-	public List<String> getDBTableNames() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> getDBTableNames() throws Exception {
+		final Connection conn = connectionManager.getConnectionWithCredentials();		
+		DatabaseMetaData dbmd = conn.getMetaData();
+		List<String> names = new ArrayList<String>();
+        String[] types = {"TABLE"};
+        ResultSet rs = dbmd.getTables(null, null, "%", types);
+        while (rs.next()) {
+        	names.add(rs.getString("TABLE_NAME"));
+        }
+		return names;
 	}
 
 	public boolean linkDimension(Dimension cubeDim, String dbTableName) {
