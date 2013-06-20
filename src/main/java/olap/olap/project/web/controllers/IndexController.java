@@ -13,6 +13,7 @@ import olap.olap.project.model.db.TableCreator;
 import olap.olap.project.model.impl.CubeApiImpl;
 import olap.olap.project.web.command.DBCredentialsForm;
 import olap.olap.project.web.command.UploadXmlForm;
+import olap.olap.project.web.session.SessionManager;
 import olap.olap.project.xml.XmlConverter;
 
 import org.dom4j.DocumentException;
@@ -51,6 +52,8 @@ public class IndexController {
 	public ModelAndView connectToDB(final HttpServletRequest req,
 			final DBCredentialsForm form, Errors errors) {
 		ModelAndView mav = new ModelAndView();
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
 		mav.setViewName("index/index");
 		mav.addObject("dbcredentialsform", form);
 		if (form.getUrl_db() == null) {
@@ -65,16 +68,16 @@ public class IndexController {
 			return mav;
 		} else {
 			try {
-				TableCreator tc = new TableCreator(form.getUrl_db(), form.getUser_db(), form.getPassword_db());
+				//TableCreator tc = new TableCreator(form.getUrl_db(), form.getUser_db(), form.getPassword_db());
+				ca.setDBCredentials(form.getUrl_db(), form.getUser_db(), form.getPassword_db());
 			} catch (Exception e) {
 				mav.addObject("couldNotConnectToDB", true);
 				return mav;
 			}
 		}
-		
+		man.setCubeApi(ca);	
 		mav.setViewName("redirect:" + req.getServletPath()
 				+ "/index/uploadxml");
-		System.out.println("----------redirecting !!!!");
 		return mav;
 	}
 	
