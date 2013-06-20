@@ -15,7 +15,11 @@
 
 <!-- generar las opciones correspondientes con las dimensiones  -->
 
-
-
+<h3>Tablas disponibles</h3>
+<ul>
+	<c:forEach var="name" items="${tableNames}" varStatus="status">
+		<li>${name}</li>
+	</c:forEach>
+</ul>
 
 <jsp:include page="../shared/footer.jsp"></jsp:include>

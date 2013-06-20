@@ -2,8 +2,9 @@ package olap.olap.project.web.controllers;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -69,7 +70,6 @@ public class IndexController {
 			return mav;
 		} else {
 			try {
-				//TableCreator tc = new TableCreator(form.getUrl_db(), form.getUser_db(), form.getPassword_db());
 				ca.setDBCredentials(form.getUrl_db(), form.getUser_db(), form.getPassword_db());
 			} catch (Exception e) {
 				mav.addObject("couldNotConnectToDB", true);
@@ -134,8 +134,13 @@ public class IndexController {
 	
 	
 	@RequestMapping(method = RequestMethod.POST)
-	protected ModelAndView manualMode() throws ServletException, IOException {
+	protected ModelAndView manualMode(final HttpServletRequest req) throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView();
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
+		List<String> tableNames = ca.getDBTableNames();
+		System.out.println(tableNames);
+		mav.addObject("tableNames", tableNames);
 		return mav;
 	}
 	
@@ -143,7 +148,6 @@ public class IndexController {
 	protected ModelAndView downloadStarXml(final HttpServletResponse response,
 			final HttpServletRequest req) throws ServletException, IOException {
 		
-		System.out.println("INSIDE downloadStarXml!!!!!");
 		final ModelAndView mav = new ModelAndView();
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
