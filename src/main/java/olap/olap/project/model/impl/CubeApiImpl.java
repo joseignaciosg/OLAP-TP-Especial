@@ -2,6 +2,7 @@ package olap.olap.project.model.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,18 +12,23 @@ import olap.olap.project.model.Cube;
 import olap.olap.project.model.Dimension;
 import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.api.CubeApi;
+import olap.olap.project.model.db.ConnectionManager;
+import olap.olap.project.model.db.ConnectionManagerPostgreWithCredentials;
 import olap.olap.project.xml.XmlConverter;
 
 public class CubeApiImpl implements CubeApi {
 
 	Cube cube;
 	MultiDim multiDim;
+	ConnectionManager connectionManager;
 
 	public CubeApiImpl() {
 	}
 
 	public boolean setDBCredentials(String dbUrl, String name, String password) {
-		// TODO Auto-generated method stub
+		connectionManager = ConnectionManagerPostgreWithCredentials
+				.setConnectionManagerWithCredentials(dbUrl, name, password);
+		
 		return false;
 	}
 
