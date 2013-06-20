@@ -37,6 +37,7 @@ public class XmlConverter {
 		Element cubeElement = null;
 		while (i.hasNext()) {
             Element e = i.next();
+         //   System.out.println(e.getName());
             if (e.getName().equals("cubo")) {
             	cubeElement = e;
             } else if (e.getName().equals("dimension")){
@@ -59,33 +60,39 @@ public class XmlConverter {
 		Document out = DocumentHelper.createDocument();
 		out = out.addDocType("Schema", null, "mondrian.dtd");
 		Element schema = out.addElement("Schema");
-		schema.addAttribute("name",multiDim.getCube().getName());
-		for (Entry<String, Dimension> entry : multiDim.getDimensions().entrySet()) {
-			Element dim = schema.addElement("Dimension");
-			Dimension dimension = entry.getValue();
-			dim.addAttribute("name", entry.getKey());
-			for(Hierarchy h : dimension.getHierarchies()) {
-				handleHierarchy(dim, h);
-			}
-		}
 		Element cubeElem = schema.addElement("Cube");
+		cubeElem.addAttribute("name",multiDim.getCube().getName());
 		Cube cube = multiDim.getCube();
-		cubeElem.addAttribute("name", cube.getName());
-		Element tableElem = cubeElem.addElement("Relation");
-		//Element table = cubeElem.addElement("Table");
-		
 		for (Measure m : cube.getMeasures()) {
 			Element measure = cubeElem.addElement("Measure");
 			measure.addAttribute("aggregator", m.getAgg());
 			measure.addAttribute("name", m.getName());
 			measure.addAttribute("datatype", Attribute.valueOf(m.getType().toUpperCase()).toString());
 		}
+		
+		
+		for (Entry<String, Dimension> entry : multiDim.getCube().getDimensions().entrySet()) {
+			Element dim = cubeElem.addElement("Dimension");
+			Dimension dimension = entry.getValue();
+			dim.addAttribute("name", entry.getKey());
+			for(Hierarchy h : dimension.getHierarchies()) {
+				handleHierarchy(dim, h);
+			}
+		}
+		
+		
+//		cubeElem.addAttribute("name", cube.getName());
+//		Element tableElem = cubeElem.addElement("Relation");
+		//Element table = cubeElem.addElement("Table");
+			
 		XMLWriter writer = new XMLWriter(
 				new FileWriter( fileName )
 				);
 		writer.write(out);
 		writer.close();
 	}
+	
+	
 	
 	private void handleHierarchy(Element dim, Hierarchy h) {
 		Element hierarchy = dim.addElement("Hierarchy");
@@ -126,6 +133,7 @@ public class XmlConverter {
 	}
 	
 	private void parseDimension(MultiDim multiDim, Element dimension) {
+	//	System.out.println(dimension.attributeValue("name"));
 		Dimension dim = new Dimension(dimension.attributeValue("name"));
 		Iterator<Element> i = dimension.elementIterator();
 		while(i.hasNext()) {
@@ -172,7 +180,7 @@ public class XmlConverter {
 	
 	public static void main(String[] args) throws DocumentException, IOException {
 		XmlConverter xml = new XmlConverter();
-		MultiDim multiDim = xml.parse(new File("in/in2.xml"));
+		MultiDim multiDim = xml.parse(new File("in/in.xml"));
 		xml.generateXml(multiDim, "out/output.xml");
 	}
 }
