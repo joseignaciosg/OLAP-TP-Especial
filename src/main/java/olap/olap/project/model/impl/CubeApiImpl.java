@@ -50,15 +50,16 @@ public class CubeApiImpl implements CubeApi {
 	public Document generateMDXAuto(String outFileName) throws IOException {
 
 		XmlConverter xml = new XmlConverter();
-		
 
 		try {
-//			 createFactTable();
+
+			createFactTable();
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return xml.generateXml(multiDim, outFileName);
 	}
 
@@ -105,18 +106,20 @@ public class CubeApiImpl implements CubeApi {
 
 		for (Measure m : multiDim.getCube().getMeasures()) {
 			parameters.put(key++, m.getName());
-			parameters.put(key, m.getType());
+			parameters.put(key++, m.getType());
 			query += "? ? ,\n";
 		}
 		// -----------------------------------------
 		// AGREGO LAS DIMENSIONES Y LAS FOREIGN KEYS
-		ArrayList<Dimension> dimensions = (ArrayList<Dimension>) multiDim
-				.getCube().getDimensions().values();
-		for (Dimension d : dimensions) {
+		// Collection<Dimension> dimensions = multiDim.getCube().getDimensions()
+		// .values();
+		Set<String> dimensiones = multiDim.getCube().getDimensions().keySet();
+		for (String s : dimensiones) {
+			Dimension d = multiDim.getCube().getDimensions().get(s);
 			Set<Property> properties = d.getLevel().getProperties();
 			for (Property p : properties) {
 				if (p.isPK()) {
-					parameters.put(key++, d.getName() + "_" + p.getName());
+					parameters.put(key++, s + "_" + p.getName());
 					parameters.put(key++, p.getType());
 					parameters.put(key++, d.getName());
 					parameters.put(key++, p.getName());
@@ -128,15 +131,17 @@ public class CubeApiImpl implements CubeApi {
 		// AGREGO LAS PRIMARY KEYS
 		query += "PRIMARY KEY (";
 		boolean first = true;
-		for (Dimension d : dimensions) {
+		for (String s : dimensiones) {
+			Dimension d = multiDim.getCube().getDimensions().get(s);
 			Set<Property> properties = d.getLevel().getProperties();
 			for (Property p : properties) {
 				if (p.isPK()) {
-					parameters.put(key++, p.getName());
+					parameters.put(key++, s + "_" + p.getName());
 					if (!first) {
 						query += ",?";
 					} else {
 						query += "?";
+						first = false;
 					}
 
 				}
@@ -155,7 +160,11 @@ public class CubeApiImpl implements CubeApi {
 		for (int i = 1; i < key; i++) {
 			statement.setString(i, parameters.get(i));
 		}
-		//statement.execute();
+
+		System.out.println("-----------------------------");
+
+		System.out.println(statement.toString());
+		// statement.execute();
 		connectionManager.closeConnection(conn);
 
 	}
