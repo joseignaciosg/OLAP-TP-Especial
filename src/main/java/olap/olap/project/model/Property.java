@@ -2,7 +2,7 @@ package olap.olap.project.model;
 
 public class Property {
 
-	private String type, name;
+	private String name,type;
 	private boolean isPK;
 	
 	public Property(String name, String type, boolean isPK) {

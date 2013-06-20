@@ -58,13 +58,16 @@ public class XmlConverter {
 	 * no hice las cosas muy bien igual esta x la mitad
 	 */
 
-	public Document generateXml(MultiDim multiDim, String fileName) throws IOException {
+	public Document generateXml(MultiDim multiDim, String fileName)
+			throws IOException {
 
 		Document out = DocumentHelper.createDocument();
 		out = out.addDocType("Schema", null, "mondrian.dtd");
 		Element schema = out.addElement("Schema");
+		schema.addAttribute("name", multiDim.getCube().getName());
 		Element cubeElem = schema.addElement("Cube");
 		cubeElem.addAttribute("name", multiDim.getCube().getName());
+		cubeElem.addAttribute("cache", "true");
 		Cube cube = multiDim.getCube();
 		for (Measure m : cube.getMeasures()) {
 			Element measure = cubeElem.addElement("Measure");
@@ -79,13 +82,15 @@ public class XmlConverter {
 			Element dim = cubeElem.addElement("Dimension");
 			Dimension dimension = entry.getValue();
 			dim.addAttribute("name", entry.getKey());
+			if (dimension.getName().equals("temporal")) {
+				dim.addAttribute("type", "TimeDimension");
+			}
 			for (Hierarchy h : dimension.getHierarchies()) {
 				handleHierarchy(dim, h);
 			}
 		}
 
-		
-//		XMLWriter writer = new XMLWriter(new FileWriter( fileName ));
+//		XMLWriter writer = new XMLWriter(new FileWriter(fileName));
 //		writer.write(out);
 //		writer.close();
 
@@ -96,6 +101,8 @@ public class XmlConverter {
 		Element hierarchy = dim.addElement("Hierarchy");
 		hierarchy.addAttribute("hasAll", "true");
 		hierarchy.addAttribute("name", h.getName());
+		Element table = hierarchy.addElement("table");
+		table.addAttribute("name", dim.getName());
 		for (Level l : h.getLevels()) {
 			handleLevel(hierarchy, l);
 		}
@@ -106,6 +113,7 @@ public class XmlConverter {
 			Element level = hierarchy.addElement("Level");
 			level.addAttribute("name", l.getName() + "-" + p.getName());
 			level.addAttribute("column", l.getName() + "-" + p.getName());
+			level.addAttribute("type", Attribute.valueOf(p.getType().toUpperCase()).toString());
 		}
 	}
 
@@ -187,6 +195,6 @@ public class XmlConverter {
 			IOException {
 		XmlConverter xml = new XmlConverter();
 		MultiDim multiDim = xml.parse(new File("in/in.xml"));
-		xml.generateXml(multiDim, "out/output.xml");
+		xml.generateXml(multiDim, "out/output3.xml");
 	}
 }
