@@ -21,7 +21,7 @@
 	</fieldset>
 </form:form>
 
-<form:form name="manualModeForm" class="form-horizontal span8 offset2" action="manualMode" method="POST">
+<form:form name="manualModeForm" class="form-horizontal span8 offset2" action="manualMode" method="GET">
 	<form:errors path="*" />
 	<fieldset>											
 		<div class="form-actions">
