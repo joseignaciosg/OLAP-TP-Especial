@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.dom4j.DocumentException;
+import org.springframework.web.multipart.MultipartFile;
 
 import olap.olap.project.model.Dimension;
 
@@ -12,7 +13,7 @@ public interface CubeApi {
 
 	public boolean setDBCredentials(String dbUrl, String name, String password);
 
-	public void loadMultildimXml(String xmlfile) throws DocumentException,
+	public void loadMultildimXml(File xmlfile) throws DocumentException,
 			IOException;
 
 	/* -------------------- AUTOMATIC MODE ------------------------------- */

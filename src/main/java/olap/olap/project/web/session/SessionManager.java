@@ -2,6 +2,8 @@ package olap.olap.project.web.session;
 
 import javax.servlet.http.HttpSession;
 
+import olap.olap.project.model.api.CubeApi;
+
 public class SessionManager {
 
 	private HttpSession session;
@@ -17,13 +19,13 @@ public class SessionManager {
 	public SessionManager(final HttpSession session) {
 		this.session = session;
 	}
-
-	public Integer getCurrentUser() {
-		return (Integer) this.session.getAttribute("user");
+	
+	public void setCubeApi(CubeApi ca){
+		this.session.setAttribute("cubeApi", ca);
 	}
-
-	public void setCurrentUser(final Integer user) {
-		this.session.setAttribute("user", user);
+	
+	public CubeApi getCubeApi(){
+		return (CubeApi) this.session.getAttribute("cubeApi");
 	}
 
 	public void endSession() {
