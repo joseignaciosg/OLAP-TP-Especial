@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -11,6 +12,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import olap.olap.project.model.Dimension;
 import olap.olap.project.model.api.CubeApi;
 import olap.olap.project.web.command.DBCredentialsForm;
 import olap.olap.project.web.command.UploadXmlForm;
@@ -138,9 +140,28 @@ public class IndexController {
 		final ModelAndView mav = new ModelAndView();
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
+		/*getting table names*/
 		List<String> tableNames = ca.getDBTableNames();
-		System.out.println(tableNames);
 		mav.addObject("tableNames", tableNames);
+		System.out.println(tableNames);
+		
+		System.out.println("preint gsndfjkhadljfhn");
+		
+		/*getting cube dimensions*/
+		Collection<Dimension> dimensions = ca.getCubeDimensions();
+		System.out.println(dimensions);
+		mav.addObject("dimensions", dimensions);
+		return mav;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST)
+	protected ModelAndView manualModeUpdateTables(final HttpServletRequest req) throws SQLException, Exception {
+		final ModelAndView mav = new ModelAndView();
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
+		
+		
+		
 		return mav;
 	}
 	

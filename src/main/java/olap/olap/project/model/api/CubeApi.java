@@ -3,6 +3,7 @@ package olap.olap.project.model.api;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import org.dom4j.Document;
@@ -29,7 +30,7 @@ public interface CubeApi {
 
 	/* -------------------- MANUAL MODE ------------------------------- */
 
-	public List<Dimension> getCubeDimensions();
+	public Collection<Dimension> getCubeDimensions();
 
 	public List<String> getDBTableNames() throws SQLException, Exception;
 

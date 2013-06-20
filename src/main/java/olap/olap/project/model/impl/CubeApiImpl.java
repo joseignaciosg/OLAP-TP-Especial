@@ -7,6 +7,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,10 +64,9 @@ public class CubeApiImpl implements CubeApi {
 		return xml.generateXml(multiDim, outFileName);
 	}
 
-	public List<Dimension> getCubeDimensions() {
-		// TODO Auto-generated method stub
-		return (ArrayList<Dimension>) multiDim.getCube().getDimensions()
-				.values();
+	public Collection<Dimension> getCubeDimensions() {
+		System.out.println(multiDim.getCube().getDimensions().values());
+		return  (Collection<Dimension>) multiDim.getCube().getDimensions().values();
 	}
 
 	public List<String> getDBTableNames() throws Exception {
