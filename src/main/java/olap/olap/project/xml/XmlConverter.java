@@ -86,7 +86,7 @@ public class XmlConverter {
 				dim.addAttribute("type", "TimeDimension");
 			}
 			for (Hierarchy h : dimension.getHierarchies()) {
-				handleHierarchy(dim, h);
+				handleHierarchy(dim, h, entry.getKey());
 			}
 		}
 
@@ -99,12 +99,12 @@ public class XmlConverter {
 		return out;
 	}
 
-	private void handleHierarchy(Element dim, Hierarchy h) {
+	private void handleHierarchy(Element dim, Hierarchy h, String dimName) {
 		Element hierarchy = dim.addElement("Hierarchy");
 		hierarchy.addAttribute("hasAll", "true");
 		hierarchy.addAttribute("name", h.getName());
 		Element table = hierarchy.addElement("table");
-		table.addAttribute("name", dim.getName());
+		table.addAttribute("name",dimName);
 		for (Level l : h.getLevels()) {
 			handleLevel(hierarchy, l);
 		}
