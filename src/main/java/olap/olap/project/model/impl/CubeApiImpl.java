@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import olap.olap.project.model.Cube;
 import olap.olap.project.model.Dimension;
 import olap.olap.project.model.Measure;
 import olap.olap.project.model.MultiDim;
@@ -21,7 +20,6 @@ import olap.olap.project.model.db.ConnectionManagerPostgreWithCredentials;
 import olap.olap.project.xml.XmlConverter;
 
 import org.dom4j.DocumentException;
-import org.springframework.web.multipart.MultipartFile;
 
 public class CubeApiImpl implements CubeApi {
 

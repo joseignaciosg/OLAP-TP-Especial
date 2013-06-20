@@ -105,7 +105,6 @@ public class IndexController {
 				System.out.printf("%c", inChar);
 			}
 			ca.loadMultildimXml(tmpFile);
-			
 		}
 		mav.setViewName("redirect:" + req.getServletPath()
 				+ "/index/selectMode");
@@ -113,7 +112,7 @@ public class IndexController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView selectMode() throws ServletException, IOException {
+	protected ModelAndView selectMode(final HttpServletRequest req) throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
 
 		
@@ -123,14 +122,12 @@ public class IndexController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	protected ModelAndView autoMode() throws ServletException, IOException {
+	protected ModelAndView autoMode(final HttpServletRequest req) throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
-//		CubeApi creator = new CubeApiImpl();
-//		creator.setDBCredentials(null, null, null);
-//		creator.loadMultildimXml();
-//		File starXml = creator.generateMDXAuto("out");
-		//TODO
-//		TableCreator tc = new TableCreator();
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
+		ca.generateMDXAuto("out/teta.xml");
+
 		return mav;
 	}
 	

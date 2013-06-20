@@ -85,9 +85,7 @@ public class XmlConverter {
 //		Element tableElem = cubeElem.addElement("Relation");
 		//Element table = cubeElem.addElement("Table");
 			
-		XMLWriter writer = new XMLWriter(
-				new FileWriter( fileName )
-				);
+		XMLWriter writer = new XMLWriter(new FileWriter( fileName ));
 		writer.write(out);
 		writer.close();
 	}
