@@ -21,6 +21,7 @@ import olap.olap.project.model.db.ConnectionManagerPostgreWithCredentials;
 import olap.olap.project.xml.XmlConverter;
 
 import org.dom4j.DocumentException;
+import org.springframework.web.multipart.MultipartFile;
 
 public class CubeApiImpl implements CubeApi {
 
@@ -38,11 +39,12 @@ public class CubeApiImpl implements CubeApi {
 		return false;
 	}
 
-	public void loadMultildimXml(String xmlfile) throws DocumentException,
+	public void loadMultildimXml(File xmlfile) throws DocumentException,
 			IOException {
-
-		XmlConverter xml = new XmlConverter();
-		multiDim = xml.parse(new File(xmlfile));
+		XmlConverter parser = new XmlConverter();
+		multiDim = parser.parse(xmlfile);
+		//for debugging
+		multiDim.print();
 	}
 
 	public void generateMDXAuto(String outFileName) throws IOException {
@@ -51,7 +53,7 @@ public class CubeApiImpl implements CubeApi {
 		xml.generateXml(multiDim, outFileName);
 
 		try {
-			createFactTable();
+//			createFactTable();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

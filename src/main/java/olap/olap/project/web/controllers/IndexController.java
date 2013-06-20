@@ -86,6 +86,8 @@ public class IndexController {
 			final UploadXmlForm form, Errors errors) throws DocumentException,
 			IOException {
 		ModelAndView mav = new ModelAndView();
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
 		mav.addObject("uploadxmlform", form);
 		if (form.getFile() == null) {
 			errors.rejectValue("empty", "file");
@@ -96,19 +98,13 @@ public class IndexController {
 					+ System.getProperty("file.separator")
 					+ xmlfile.getOriginalFilename());
 			xmlfile.transferTo(tmpFile);
-			XmlConverter parser = new XmlConverter();
-			
-			//TODO remove - for parsing
 			FileReader fr = null;
 			fr = new FileReader(tmpFile);
 			int inChar;
 			while ((inChar = fr.read()) != -1) {
 				System.out.printf("%c", inChar);
 			}
-			
-			//TODO levantar las tablas y crear el archivo
-			MultiDim xmlDocument = parser.parse(tmpFile);
-			xmlDocument.print();
+			ca.loadMultildimXml(tmpFile);
 			
 		}
 		mav.setViewName("redirect:" + req.getServletPath()

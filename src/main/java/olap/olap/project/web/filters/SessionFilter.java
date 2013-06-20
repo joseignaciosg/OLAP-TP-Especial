@@ -47,7 +47,6 @@ public class SessionFilter extends OncePerRequestFilter {
 
 		httpRequest.setAttribute("basePath", httpRequest.getContextPath() + httpRequest.getServletPath());
 		httpRequest.setAttribute("manager", man);
-		System.out.println("here!!!!!");
 		httpResponse.setCharacterEncoding("UTF-8");
 
     	// Assets and other pages are for anonymous users
