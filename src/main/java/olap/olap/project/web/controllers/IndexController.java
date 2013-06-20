@@ -2,21 +2,22 @@ package olap.olap.project.web.controllers;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import olap.olap.project.model.MultiDim;
 import olap.olap.project.model.api.CubeApi;
-import olap.olap.project.model.db.TableCreator;
-import olap.olap.project.model.impl.CubeApiImpl;
 import olap.olap.project.web.command.DBCredentialsForm;
 import olap.olap.project.web.command.UploadXmlForm;
 import olap.olap.project.web.session.SessionManager;
-import olap.olap.project.xml.XmlConverter;
 
+import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.io.XMLWriter;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -126,8 +127,8 @@ public class IndexController {
 		final ModelAndView mav = new ModelAndView();
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
-		ca.generateMDXAuto("out/teta.xml");
-
+		Document outXml = ca.generateMDXAuto("out/out.xml");
+		man.setOutXml(outXml);
 		return mav;
 	}
 	
@@ -135,15 +136,33 @@ public class IndexController {
 	@RequestMapping(method = RequestMethod.POST)
 	protected ModelAndView manualMode() throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
-//		TableCreator tc = new TableCreator();
 		return mav;
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	protected ModelAndView downloadStarXml() throws ServletException, IOException {
+	protected ModelAndView downloadStarXml(final HttpServletResponse response,
+			final HttpServletRequest req) throws ServletException, IOException {
+		
+		System.out.println("INSIDE downloadStarXml!!!!!");
 		final ModelAndView mav = new ModelAndView();
-		//TODO codigo para descargar el xml de salida
-//		TableCreator tc = new TableCreator();
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
+		
+		//tell browser program going to return an application file 
+        //instead of html page
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition","attachment;filename=out.xml");
+        
+        Document outXml = man.getOutXml();
+        ServletOutputStream out = response.getOutputStream();
+        XMLWriter writer = new XMLWriter(out);
+        
+        writer.write(outXml);
+		out.flush();
+		out.close();
+        
+        
+        
 		return mav;
 	}
 	

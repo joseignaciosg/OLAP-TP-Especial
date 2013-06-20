@@ -56,7 +56,7 @@ public class XmlConverter {
      * Hay que leer bien http://mondrian.pentaho.com/documentation/schema.php#Star_schemas creo q no hice las cosas muy bien
      * igual esta x la mitad
 	 */
-	public void generateXml(MultiDim multiDim, String fileName) throws IOException {
+	public Document generateXml(MultiDim multiDim, String fileName) throws IOException {
 		Document out = DocumentHelper.createDocument();
 		out = out.addDocType("Schema", null, "mondrian.dtd");
 		Element schema = out.addElement("Schema");
@@ -80,14 +80,11 @@ public class XmlConverter {
 			}
 		}
 		
-		
-//		cubeElem.addAttribute("name", cube.getName());
-//		Element tableElem = cubeElem.addElement("Relation");
-		//Element table = cubeElem.addElement("Table");
-			
-		XMLWriter writer = new XMLWriter(new FileWriter( fileName ));
-		writer.write(out);
-		writer.close();
+//		XMLWriter writer = new XMLWriter(new FileWriter( fileName ));
+//		writer.write(out);
+//		writer.close();
+
+		return out;
 	}
 	
 	

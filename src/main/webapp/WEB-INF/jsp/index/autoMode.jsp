@@ -12,7 +12,7 @@
 
 <h2>Tablas creadas y Documento XML modelo estrella generado correctamente</h2>
 
-<form:form name="downloadStarXml" class="form-horizontal span8 offset2" action="manualMode" method="POST">
+<form:form name="downloadStarXmlForm" class="form-horizontal span8 offset2" action="downloadStarXml" method="POST">
 	<form:errors path="*" />
 	<fieldset>											
 		<div class="form-actions">
