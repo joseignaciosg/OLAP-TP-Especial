@@ -50,7 +50,7 @@
 							</div>
 						</div>												
 						<div class="form-actions">
-							<input type="submit" class="btn btn-primary" value="Conectar" />
+							<center><input type="submit" class="btn btn-primary" value="Conectar" /></center>
 						</div>
 					</fieldset>
 				</form:form>

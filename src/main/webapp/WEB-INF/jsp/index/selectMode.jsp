@@ -16,7 +16,7 @@
 	<form:errors path="*" />
 	<fieldset>											
 		<div class="form-actions">
-			<input type="submit" class="btn btn-primary" value="Modo Automático" />
+			<center><input type="submit" class="btn btn-primary" value="Modo Automático" /></center>
 		</div>
 	</fieldset>
 </form:form>
@@ -25,7 +25,7 @@
 	<form:errors path="*" />
 	<fieldset>											
 		<div class="form-actions">
-			<input type="submit" class="btn btn-primary" value="Modo Manual" />
+			<center><input type="submit" class="btn btn-primary" value="Modo Manual" /></center>
 		</div>
 	</fieldset>
 </form:form>
