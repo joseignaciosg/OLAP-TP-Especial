@@ -167,7 +167,7 @@ public class IndexController {
 
 		/* getting cube dimensions */
 		Collection<Dimension> dimensions = ca.getCubeDimensions();
-		Set<Dimension> noRepeatDimensions = new HashSet(dimensions);
+		Set<Dimension> noRepeatDimensions = new HashSet<Dimension>(dimensions);
 		mav.addObject("dimensions", noRepeatDimensions);
 		return mav;
 	}
@@ -221,11 +221,13 @@ public class IndexController {
 		}
 
 		/* getting table names */
-		List<String> tableNames = ca.getDBTableNames();
+		Collection<Dimension> dimensions = ca.getCubeDimensions();
+		Set<Dimension> tableNames = new HashSet<Dimension>(dimensions);
 
 		/* TODO hacer que se pueda elegir un primary key */
 		List<ListWrapper> tables = new ArrayList<ListWrapper>();
-		for (String tname : tableNames) {
+		for (Dimension d : tableNames) {
+			String tname = d.getName();
 			ListWrapper tableList = new ListWrapper(tname,
 					ca.getPropertiesForDimension(tname),
 					ca.getDBFieldsForTable(tname));
@@ -243,15 +245,7 @@ public class IndexController {
 
 	/* MANUAL MODE STEP 2 */
 	@RequestMapping(method = RequestMethod.POST)
-<<<<<<< HEAD
-	protected ModelAndView manualModeUpdateFieldsPost(final HttpServletRequest req) throws SQLException, Exception {
-		final ModelAndView mav = new ModelAndView();
-		SessionManager man  = (SessionManager) req.getAttribute("manager");
-		CubeApi ca  = man.getCubeApi();
-		
-		Map<String,String[]> values = req.getParameterMap();
-		System.out.println("VALUES:"+ values);
-=======
+
 	protected ModelAndView manualModeUpdateFieldsPost(
 			final HttpServletRequest req) throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView("index/manualMode");
@@ -260,7 +254,6 @@ public class IndexController {
 
 		Map<String, String[]> values = req.getParameterMap();
 		System.out.println("VALUES:" + values);
->>>>>>> 0c18698abf448f19487fc813ddd41f88ab7a91e0
 		boolean valid = false;
 		/* the name of then first dimension with no matching */
 		String fieldName = null;
@@ -268,13 +261,8 @@ public class IndexController {
 		String propName = null;
 		for (Map.Entry<String, String[]> entry : values.entrySet()) {
 			String value = entry.getValue()[0].split("/")[0];
-<<<<<<< HEAD
 			String tname= entry.getValue()[0].split("/")[1];
 			/*se controla que el tipo sea el mismo dentro de chagePropertyName*/
-=======
-			String tname = entry.getValue()[0].split("/")[1];
-			/* devuelve falso si el tipo no es el miemo */
->>>>>>> 0c18698abf448f19487fc813ddd41f88ab7a91e0
 			valid = ca.changePropertyName(tname, entry.getKey(), value);
 			if (!valid) {
 				fieldName = entry.getKey();
