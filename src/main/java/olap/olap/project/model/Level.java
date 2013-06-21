@@ -44,7 +44,7 @@ public class Level {
 	public List<String> getPropertyNames(){
 		List<String> ret = new ArrayList<String>();
 		for(Property p: properties){
-			ret.add(p.getName());
+			ret.add(this.getName()+"_"+p.getName());
 		}
 		return ret;
 	}

@@ -57,7 +57,7 @@ public class Dimension {
 	public List<String> getPropertyNames(){
 		List<String> ret = new ArrayList<String>();
 		for(Property p: level.getProperties()){
-			ret.add(p.getName());
+			ret.add(level.getName()+"_"+p.getName());
 		}
 		for(Hierarchy h: hierarchies){
 			ret.addAll(h.getPropertyNames());
