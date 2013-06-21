@@ -5,7 +5,7 @@
 	<groupId>olap</groupId>
 	<artifactId>olap.project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>olap.project</name>
 	<url>http://maven.apache.org</url>

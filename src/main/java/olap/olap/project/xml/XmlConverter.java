@@ -76,9 +76,9 @@ public class XmlConverter {
 			Element dim = cubeElem.addElement("Dimension");
 			Dimension dimension = entry.getValue();
 			dim.addAttribute("name", entry.getKey());
-			dim.addAttribute("foreignKey", multiDim.getCube().getName() + "_fact_" + entry.getKey() + "_id_fkey");
+			dim.addAttribute("foreignKey", (entry.getKey() + "_id").toLowerCase());
 			if (dimension.getName().equals("temporal")) {
-				dim.addAttribute("type", "TimeDimension");
+			//	dim.addAttribute("type", "TimeDimension");
 			}
 			
 			for (Hierarchy h : dimension.getHierarchies()) {
@@ -92,11 +92,13 @@ public class XmlConverter {
 			measure.addAttribute("name", m.getName());
 			measure.addAttribute("datatype",
 					Attribute.valueOf(m.getType().toUpperCase()).toString());
+			measure.addAttribute("column", m.getName());
+			
 		}
 
-		XMLWriter writer = new XMLWriter(new FileWriter(fileName));
-		writer.write(out);
-		writer.close();
+//		XMLWriter writer = new XMLWriter(new FileWriter(fileName));
+//		writer.write(out);
+//		writer.close();
 
 
 		return out;
@@ -106,24 +108,28 @@ public class XmlConverter {
 		Element hierarchy = dim.addElement("Hierarchy");
 		hierarchy.addAttribute("hasAll", "true");
 		hierarchy.addAttribute("name", h.getName());
-		hierarchy.addAttribute("primaryKey", dimName + "_id");
+		hierarchy.addAttribute("primaryKey", (dimName + "_id").toLowerCase());
 		Element table = hierarchy.addElement("table");
-		table.addAttribute("name",dimName);
+		table.addAttribute("name",dimName.toLowerCase());
 		for (Level l : h.getLevels()) {
 			Element level = hierarchy.addElement("Level");
 			level.addAttribute("name", l.getName());
-			level.addAttribute("column", l.getName());
-			level.addAttribute("levelType", "Regular");
-			handleLevel(hierarchy, l);
+			level.addAttribute("column", l.getName().toLowerCase());
+		//	level.addAttribute("levelType", "Regular");
+			handleLevel(level, l);
 		}
 	}
 
-	private void handleLevel(Element hierarchy, Level l) {
+	private void handleLevel(Element level, Level l) {
+		
 		for (Property p : l.getProperties()) {
-			Element level = hierarchy.addElement("Property");
-			level.addAttribute("name", l.getName() + "_" + p.getName());
-			level.addAttribute("column", l.getName() + "_" + p.getName());
-			level.addAttribute("type", Attribute.valueOf(p.getType().toUpperCase()).toString());
+			if ( p.isPK()) {
+				level.addAttribute("column",(l.getName() + "_" + p.getName()).toLowerCase());
+			}
+			Element property = level.addElement("Property");
+			property.addAttribute("name", l.getName() + "_" + p.getName());
+			property.addAttribute("column", (l.getName() + "_" + p.getName()).toLowerCase());
+			property.addAttribute("type", Attribute.valueOf(p.getType().toUpperCase()).toString());
 		}
 	}
 
@@ -207,10 +213,10 @@ public class XmlConverter {
 		dim.addHierarchy(hierachy);
 	}
 
-	public static void main(String[] args) throws DocumentException,
-			IOException {
-		XmlConverter xml = new XmlConverter();
-		MultiDim multiDim = xml.parse(new File("in/in.xml"));
-		xml.generateXml(multiDim, "out/output3.xml");
-	}
+//	public static void main(String[] args) throws DocumentException,
+//			IOException {
+//		XmlConverter xml = new XmlConverter();
+//		MultiDim multiDim = xml.parse(new File("in/in.xml"));
+//		xml.generateXml(multiDim, "out/output3.xml");
+//	}
 }
