@@ -16,8 +16,8 @@
 <br />
 
 
-<h2><b>Paso 2: </b> Seleccione las campos apropiados para tada tabla</h2>
-
+<h2><b>Paso 2: </b> Seleccione las campos apropiados para cada tabla</h2>
+<hr>
 
 
 

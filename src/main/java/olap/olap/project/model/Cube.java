@@ -38,6 +38,7 @@ public class Cube {
 				 * cubo es diferente a la cantidad de campos de la tabla
 				 * en la base de datos, entonces hubo un error
 				 * */
+				System.out.println("DIM:" +d.getName() +": props:" +propertyCount);
 				if (columnCount != propertyCount){
 					ret = false;
 					break;
