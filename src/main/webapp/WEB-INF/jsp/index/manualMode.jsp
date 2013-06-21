@@ -18,7 +18,7 @@
 
 <h2><b>Paso 1: </b> Seleccione las tablas apropiadas de su base de datos</h2>
 
-
+<hr>
 
 
 <form:form method="POST" class="form-horizontal span8 offset2"
