@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -45,7 +47,7 @@ public class IndexController {
 		mav.addObject("dbcredentialsform", form);
 		return mav;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView uploadxml(final UploadXmlForm form)
 			throws ServletException, IOException {
@@ -53,14 +55,13 @@ public class IndexController {
 		mav.addObject("uploadxmlform", form);
 		return mav;
 	}
-	
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView connectToDB(final HttpServletRequest req,
 			final DBCredentialsForm form, Errors errors) {
 		ModelAndView mav = new ModelAndView();
-		SessionManager man  = (SessionManager) req.getAttribute("manager");
-		CubeApi ca  = man.getCubeApi();
+		SessionManager man = (SessionManager) req.getAttribute("manager");
+		CubeApi ca = man.getCubeApi();
 		mav.setViewName("index/index");
 		mav.addObject("dbcredentialsform", form);
 		if (form.getUrl_db() == null) {
@@ -69,31 +70,31 @@ public class IndexController {
 		} else if (form.getUser_db() == null) {
 			errors.rejectValue("empty", "user_db");
 			return mav;
-			
+
 		} else if (form.getPassword_db() == null) {
 			errors.rejectValue("empty", "password_db");
 			return mav;
 		} else {
 			try {
-				ca.setDBCredentials(form.getUrl_db(), form.getUser_db(), form.getPassword_db());
+				ca.setDBCredentials(form.getUrl_db(), form.getUser_db(),
+						form.getPassword_db());
 			} catch (Exception e) {
 				mav.addObject("couldNotConnectToDB", true);
 				return mav;
 			}
 		}
-		man.setCubeApi(ca);	
-		mav.setViewName("redirect:" + req.getServletPath()
-				+ "/index/uploadxml");
+		man.setCubeApi(ca);
+		mav.setViewName("redirect:" + req.getServletPath() + "/index/uploadxml");
 		return mav;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView uploadXml(final HttpServletRequest req,
 			final UploadXmlForm form, Errors errors) throws DocumentException,
 			IOException {
 		ModelAndView mav = new ModelAndView();
-		SessionManager man  = (SessionManager) req.getAttribute("manager");
-		CubeApi ca  = man.getCubeApi();
+		SessionManager man = (SessionManager) req.getAttribute("manager");
+		CubeApi ca = man.getCubeApi();
 		mav.addObject("uploadxmlform", form);
 		if (form.getFile() == null) {
 			errors.rejectValue("empty", "file");
@@ -118,182 +119,191 @@ public class IndexController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView selectMode(final HttpServletRequest req) throws ServletException, IOException {
+	protected ModelAndView selectMode(final HttpServletRequest req)
+			throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
 
-		
-		
-		
 		return mav;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.POST)
-	protected ModelAndView autoMode(final HttpServletRequest req) throws ServletException, IOException {
+	protected ModelAndView autoMode(final HttpServletRequest req)
+			throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
-		SessionManager man  = (SessionManager) req.getAttribute("manager");
-		CubeApi ca  = man.getCubeApi();
+		SessionManager man = (SessionManager) req.getAttribute("manager");
+		CubeApi ca = man.getCubeApi();
 		Document outXml = ca.generateMDXAuto("out/out.xml");
 		man.setOutXml(outXml);
 		return mav;
 	}
-	
+
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView manualDownloadMode(final HttpServletRequest req) throws ServletException, IOException {
+	protected ModelAndView manualDownloadMode(final HttpServletRequest req)
+			throws ServletException, IOException {
 		final ModelAndView mav = new ModelAndView();
-		SessionManager man  = (SessionManager) req.getAttribute("manager");
-		CubeApi ca  = man.getCubeApi();
-		Document outXml = ca.generateMDXAuto("out/out.xml");
+		SessionManager man = (SessionManager) req.getAttribute("manager");
+		CubeApi ca = man.getCubeApi();
+		Document outXml = ca.generateMDXManual("out/out.xml");
 		man.setOutXml(outXml);
 		return mav;
 	}
-	
-	
-	/*MANUAL MODE STEP 1 POST*/
+
+	/* MANUAL MODE STEP 1 POST */
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView manualMode(final HttpServletRequest req) throws SQLException, Exception {
+	protected ModelAndView manualMode(final HttpServletRequest req)
+			throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView();
-		SessionManager man  = (SessionManager) req.getAttribute("manager");
-		CubeApi ca  = man.getCubeApi();
-		
+		SessionManager man = (SessionManager) req.getAttribute("manager");
+		CubeApi ca = man.getCubeApi();
+
 		String error = (String) req.getParameter("error");
-		if( error !=  null){
+		if (error != null) {
 			mav.addObject("error", error);
 		}
-		
-		/*getting table names*/
+
+		/* getting table names */
 		List<String> tableNames = ca.getDBTableNames();
 		mav.addObject("tableNames", tableNames);
-				
-		/*getting cube dimensions*/
+
+		/* getting cube dimensions */
 		Collection<Dimension> dimensions = ca.getCubeDimensions();
-		mav.addObject("dimensions", dimensions);
+		Set<Dimension> noRepeatDimensions = new HashSet<Dimension>(dimensions);
+		mav.addObject("dimensions", noRepeatDimensions);
 		return mav;
 	}
-	
-	/*MANUAL MODE STEP 1*/
+
+	/* MANUAL MODE STEP 1 */
 	@RequestMapping(method = RequestMethod.POST)
-	protected ModelAndView manualModeUpdateTables( final HttpServletRequest req) throws SQLException, Exception {
+	protected ModelAndView manualModeUpdateTables(final HttpServletRequest req)
+			throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView("index/manualMode");
-		SessionManager man  = (SessionManager) req.getAttribute("manager");
-		CubeApi ca  = man.getCubeApi();
-		Map<String,String[]> values = req.getParameterMap();
+		SessionManager man = (SessionManager) req.getAttribute("manager");
+		CubeApi ca = man.getCubeApi();
+		Map<String, String[]> values = req.getParameterMap();
 		boolean valid = false;
-		/*the name of then first dimension with no matching*/
+		/* the name of then first dimension with no matching */
 		String dimName = null;
-		/*the name of then first table with no matching*/
-		String tableName = null; 
-		for (Map.Entry<String, String[]> entry : values.entrySet()){
+		/* the name of then first table with no matching */
+		String tableName = null;
+		for (Map.Entry<String, String[]> entry : values.entrySet()) {
 			valid = ca.linkDimension(entry.getKey(), entry.getValue()[0]);
-			if (!valid){
+			if (!valid) {
 				dimName = entry.getKey();
 				tableName = entry.getValue()[0];
-				break; 
+				break;
 			}
 		}
-		
+
 		if (valid) {
-			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualModeUpdateFields");
+			mav.setViewName("redirect:" + req.getServletPath()
+					+ "/index/manualModeUpdateFields");
 		} else {
-			mav.addObject("error", "La table " + tableName + " no tiene la misma"+
-						  " cantidad de propiedades que la dimensi&oacuten " + dimName );
-			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualMode");
+			mav.addObject("error", "La table " + tableName
+					+ " no tiene la misma"
+					+ " cantidad de propiedades que la dimensi&oacuten "
+					+ dimName);
+			mav.setViewName("redirect:" + req.getServletPath()
+					+ "/index/manualMode");
 		}
 		return mav;
 	}
-	
-	/*MANUAL MODE STEP 2 FORM*/
+
+	/* MANUAL MODE STEP 2 FORM */
 	@RequestMapping(method = RequestMethod.GET)
-	protected ModelAndView manualModeUpdateFields(final HttpServletRequest req) throws SQLException, Exception {
-		final ModelAndView mav = new ModelAndView();	
+	protected ModelAndView manualModeUpdateFields(final HttpServletRequest req)
+			throws SQLException, Exception {
+		final ModelAndView mav = new ModelAndView();
 		String error = (String) req.getParameter("error");
-		SessionManager man  = (SessionManager) req.getAttribute("manager");
-		CubeApi ca  = man.getCubeApi();
-		if( error !=  null){
+		SessionManager man = (SessionManager) req.getAttribute("manager");
+		CubeApi ca = man.getCubeApi();
+		if (error != null) {
 			mav.addObject("error", error);
 		}
-		
-		/*getting table names*/
-		List<String> tableNames = ca.getDBTableNames();
-	
-		/*TODO hacer que se pueda elegir un primary key*/
+
+		/* getting table names */
+		Collection<Dimension> dimensions = ca.getCubeDimensions();
+		Set<Dimension> tableNames = new HashSet<Dimension>(dimensions);
+
+		/* TODO hacer que se pueda elegir un primary key */
 		List<ListWrapper> tables = new ArrayList<ListWrapper>();
-		for(String tname: tableNames){
-			ListWrapper tableList = new ListWrapper(tname, ca.getPropertiesForDimension(tname), ca.getDBFieldsForTable(tname));
+		for (Dimension d : tableNames) {
+			String tname = d.getName();
+			ListWrapper tableList = new ListWrapper(tname,
+					ca.getPropertiesForDimension(tname),
+					ca.getDBFieldsForTable(tname));
 			tables.add(tableList);
 			System.out.println("FIELD LIST: " + ca.getDBFieldsForTable(tname));
-			System.out.println("PROP LIST: " + ca.getPropertiesForDimension(tname));
+			System.out.println("PROP LIST: "
+					+ ca.getPropertiesForDimension(tname));
 		}
-			
+
 		mav.addObject("tables", tables);
-		
+
 		return mav;
-		
+
 	}
-	
-	/*MANUAL MODE STEP 2*/
+
+	/* MANUAL MODE STEP 2 */
 	@RequestMapping(method = RequestMethod.POST)
-	protected ModelAndView manualModeUpdateFieldsPost(final HttpServletRequest req) throws SQLException, Exception {
+
+	protected ModelAndView manualModeUpdateFieldsPost(
+			final HttpServletRequest req) throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView("index/manualMode");
-		SessionManager man  = (SessionManager) req.getAttribute("manager");
-		CubeApi ca  = man.getCubeApi();
-		
-		Map<String,String[]> values = req.getParameterMap();
-		System.out.println("VALUES:"+ values);
+		SessionManager man = (SessionManager) req.getAttribute("manager");
+		CubeApi ca = man.getCubeApi();
+
+		Map<String, String[]> values = req.getParameterMap();
+		System.out.println("VALUES:" + values);
 		boolean valid = false;
-		/*the name of then first dimension with no matching*/
+		/* the name of then first dimension with no matching */
 		String fieldName = null;
-		/*the name of then first table with no matching*/
-		String propName = null; 
-		for (Map.Entry<String, String[]> entry : values.entrySet()){
+		/* the name of then first table with no matching */
+		String propName = null;
+		for (Map.Entry<String, String[]> entry : values.entrySet()) {
 			String value = entry.getValue()[0].split("/")[0];
 			String tname= entry.getValue()[0].split("/")[1];
-			/*devuelve falso si el tipo no es el miemo*/
+			/*se controla que el tipo sea el mismo dentro de chagePropertyName*/
 			valid = ca.changePropertyName(tname, entry.getKey(), value);
-			if (!valid){
+			if (!valid) {
 				fieldName = entry.getKey();
 				propName = value;
-				break; 
+				break;
 			}
 		}
-		
+
 		if (valid) {
-			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualDownloadMode");
+			mav.setViewName("redirect:" + req.getServletPath()
+					+ "/index/manualDownloadMode");
 		} else {
-			mav.addObject("error", "Una de las asignaciones no es v&aacute;lida" );
-			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualModeUpdateFields");
+			mav.addObject("error",
+					"Una de las asignaciones no es v&aacute;lida");
+			mav.setViewName("redirect:" + req.getServletPath()
+					+ "/index/manualModeUpdateFields");
 		}
 		return mav;
 	}
-	
-	
+
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView downloadStarXml(final HttpServletResponse response,
 			final HttpServletRequest req) throws ServletException, IOException {
-		
+
 		final ModelAndView mav = new ModelAndView();
-		SessionManager man  = (SessionManager) req.getAttribute("manager");
-		CubeApi ca  = man.getCubeApi();
-		
-		//tell browser program going to return an application file 
-        //instead of html page
-        response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition","attachment;filename=out.xml");
-        
-        Document outXml = man.getOutXml();
-        ServletOutputStream out = response.getOutputStream();
-        XMLWriter writer = new XMLWriter(out);
-        
-        writer.write(outXml);
+		SessionManager man = (SessionManager) req.getAttribute("manager");
+		CubeApi ca = man.getCubeApi();
+
+		// tell browser program going to return an application file
+		// instead of html page
+		response.setContentType("application/octet-stream");
+		response.setHeader("Content-Disposition", "attachment;filename=out.xml");
+
+		Document outXml = man.getOutXml();
+		ServletOutputStream out = response.getOutputStream();
+		XMLWriter writer = new XMLWriter(out);
+
+		writer.write(outXml);
 		out.flush();
 		out.close();
 		return mav;
 	}
 
-	
-	
-	
-
-	
-	
-	
 }

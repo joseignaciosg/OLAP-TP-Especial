@@ -49,13 +49,20 @@ public class Level {
 		return ret;
 	}
 	
-	public boolean changePropertyName(String oldName, String newName){
+	public boolean changePropertyName(String oldName, String newName, String fieldType){
 		Iterator<Property> it = properties.iterator();
 		while(it.hasNext()){
 			Property p = it.next();
 			if (p.getName().equals(oldName)){
-				p.setName(newName);
-				return true;
+				String ptype = SQLAttribute.valueOf(p.getType().toUpperCase()).toString();
+				System.out.println("######## Property Type: "+ ptype );
+				System.out.println("######## Field    Type: "+ fieldType );
+				if ( ptype.equals(fieldType) ){
+					p.setName(newName);
+					return true;
+				}else{
+					return false;
+				}
 			}
 		}
 		return true;
