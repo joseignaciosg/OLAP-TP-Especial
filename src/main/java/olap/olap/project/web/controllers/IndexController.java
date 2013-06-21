@@ -137,6 +137,16 @@ public class IndexController {
 		return mav;
 	}
 	
+	@RequestMapping(method = RequestMethod.GET)
+	protected ModelAndView manualDownloadMode(final HttpServletRequest req) throws ServletException, IOException {
+		final ModelAndView mav = new ModelAndView();
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
+		Document outXml = ca.generateMDXAuto("out/out.xml");
+		man.setOutXml(outXml);
+		return mav;
+	}
+	
 	
 	/*MANUAL MODE STEP 1 POST*/
 	@RequestMapping(method = RequestMethod.GET)
@@ -167,7 +177,6 @@ public class IndexController {
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
 		Map<String,String[]> values = req.getParameterMap();
-		System.out.println("VALUES + " + values);
 		boolean valid = false;
 		/*the name of then first dimension with no matching*/
 		String dimName = null;
@@ -176,7 +185,6 @@ public class IndexController {
 		for (Map.Entry<String, String[]> entry : values.entrySet()){
 			valid = ca.linkDimension(entry.getKey(), entry.getValue()[0]);
 			if (!valid){
-				System.out.println("NOT VALID	");
 				dimName = entry.getKey();
 				tableName = entry.getValue()[0];
 				break; 
@@ -207,6 +215,7 @@ public class IndexController {
 		/*getting table names*/
 		List<String> tableNames = ca.getDBTableNames();
 	
+		/*TODO hacer que se pueda elegir un primary key*/
 		List<ListWrapper> tables = new ArrayList<ListWrapper>();
 		for(String tname: tableNames){
 			ListWrapper tableList = new ListWrapper(tname, ca.getPropertiesForDimension(tname), ca.getDBFieldsForTable(tname));
@@ -228,19 +237,36 @@ public class IndexController {
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
 		
+		Map<String,String[]> values = req.getParameterMap();
+		System.out.println("VALUES:"+ values);
 		boolean valid = false;
+		/*the name of then first dimension with no matching*/
+		String fieldName = null;
+		/*the name of then first table with no matching*/
+		String propName = null; 
+		for (Map.Entry<String, String[]> entry : values.entrySet()){
+			String value = entry.getValue()[0].split("/")[0];
+			String tname= entry.getValue()[0].split("/")[1];
+			/*devuelve falso si el tipo no es el miemo*/
+			valid = ca.changePropertyName(tname, entry.getKey(), value);
+			if (!valid){
+				fieldName = entry.getKey();
+				propName = value;
+				break; 
+			}
+		}
+		
 		if (valid) {
-			
+			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualDownloadMode");
 		} else {
 			mav.addObject("error", "Una de las asignaciones no es v&aacute;lida" );
 			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualModeUpdateFields");
-			return mav;
 		}
-		return this.manualMode(req);
+		return mav;
 	}
 	
 	
-	@RequestMapping(method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView downloadStarXml(final HttpServletResponse response,
 			final HttpServletRequest req) throws ServletException, IOException {
 		

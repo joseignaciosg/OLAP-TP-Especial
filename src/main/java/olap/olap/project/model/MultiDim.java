@@ -1,6 +1,7 @@
 package olap.olap.project.model;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class MultiDim {
@@ -31,6 +32,17 @@ public class MultiDim {
 	
 	public Dimension getDimension(String ptr) {
 		return dimensions.get(ptr.toLowerCase());
+	}
+	
+	public Dimension getDimensionValue(String ptr){
+		Iterator<Dimension> it = dimensions.values().iterator();
+		while(it.hasNext()){
+			Dimension d = it.next();
+			if(d.getName().equals(ptr)){
+				return d;
+			}
+		}
+		return null;
 	}
 
 	public void print() {

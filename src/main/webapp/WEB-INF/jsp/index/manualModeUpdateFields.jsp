@@ -34,13 +34,13 @@
 						<select name="${prop}">
 							<div class="pull-left" >
 								<c:forEach var="field" items="${table.fieldList}" >
-									<option value="${field}" label="${field}" />
+									<option value="${field}/${table.tableName}" label="${field}" />
 								</c:forEach>
 							</div>
 						</select>
 					</div> 
+				</c:forEach>
 		  </fieldset>
-		</c:forEach>
 		<br><br>
 		<br> <br>	
 	</c:forEach>

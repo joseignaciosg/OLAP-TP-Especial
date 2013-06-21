@@ -48,4 +48,7 @@ public interface CubeApi {
 	 */
 	public void generateMDXManual(String outFileName);
 
+
+	public boolean changePropertyName(String tableName, String propName, String fieldName);
+
 }

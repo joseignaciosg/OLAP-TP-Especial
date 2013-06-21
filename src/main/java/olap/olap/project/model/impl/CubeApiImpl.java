@@ -275,4 +275,12 @@ public class CubeApiImpl implements CubeApi {
 
 		connectionManager.closeConnection(conn);
 	}
+	
+	public boolean changePropertyName(String tableName, String propName, String fieldName){
+		System.out.println(tableName);
+		Dimension dim = multiDim.getDimensionValue(tableName);
+		/*tiene que chequar que el tipo sea correcto*/
+		return dim.changePropertyName(propName, fieldName);
+	}
+	
 }

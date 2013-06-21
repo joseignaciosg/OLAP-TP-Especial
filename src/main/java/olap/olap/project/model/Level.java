@@ -49,14 +49,16 @@ public class Level {
 		return ret;
 	}
 	
-	public void changePropertyName(String oldName, String newName){
+	public boolean changePropertyName(String oldName, String newName){
 		Iterator<Property> it = properties.iterator();
 		while(it.hasNext()){
 			Property p = it.next();
 			if (p.getName().equals(oldName)){
 				p.setName(newName);
+				return true;
 			}
 		}
+		return true;
 	}
 	
 

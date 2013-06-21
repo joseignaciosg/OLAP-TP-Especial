@@ -49,12 +49,14 @@ public class Hierarchy {
 		return ret;
 	}
 	
-	public void changePropertyName(String oldName, String newName){
+	public boolean changePropertyName(String oldName, String newName){
 		Iterator<Level> it = this.levels.iterator();
+		boolean valid = true;
 		while (it.hasNext()) {
 			Level l = it.next();
-			l.changePropertyName(oldName, newName);
+			valid &= l.changePropertyName(oldName, newName);
 		}
+		return valid;
 	}
 	
 }

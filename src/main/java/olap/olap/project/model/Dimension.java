@@ -65,19 +65,22 @@ public class Dimension {
 		return ret;
 	}
 
-	public void changePropertyName(String oldName, String newName){
+	public boolean changePropertyName(String oldName, String newName){
 		Iterator<Property> iter = this.level.getProperties().iterator();
+		boolean valid = true;
 		while (iter.hasNext()) {
 			Property p = iter.next();
 			if(p.getName().equals(oldName)){
 				p.setName(newName);
+				return true;
 			}
 		}
 		Iterator<Hierarchy> it = this.hierarchies.iterator();
 		while (it.hasNext()) {
 			Hierarchy h = it.next();
-			h.changePropertyName( oldName,  newName);
+			valid &= h.changePropertyName( oldName,  newName);
 		}
+		return valid;
 	}
 	
 	public void print() {
