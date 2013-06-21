@@ -9,7 +9,8 @@
 
 <br />
 
-<h1>Olap Project: tu mundo olap</h1>
+<center>
+<h1>Proyecto OLAP - MultimDim a MDX</h1>
 <table>
 	<tr>
 		<td>
@@ -17,6 +18,7 @@
 				<c:if test="${couldNotConnectToDB }">
 					<h3>No se pudo conectar a la base de datos.</h3>
 				</c:if>
+				
 				<form:form name="dbcredentialsform" class="form-horizontal span8 offset2"
 					action="connectToDB" method="POST"
 					commandName="dbcredentialsform">
@@ -28,7 +30,7 @@
 							<div class="controls">
 								<form:input type="text" class="input-xlarge" id="url_db"
 									name="url_db" path="url_db" />
-								<span>localhost:5432/postgres</span>
+								<span style="color:grey">Ej: localhost:5432/postgres</span>
 							</div>
 						</div>
 						<div class="control-group">
@@ -36,7 +38,7 @@
 							<div class="controls">
 								<form:input type="text" class="input-xlarge" id="user_db"
 									name="user_db" path="user_db" />
-								<span>postgres</span>
+								<span style="color:grey">Ej: postgres</span>
 							</div>
 						</div>
 						<div class="control-group">
@@ -44,7 +46,7 @@
 							<div class="controls">
 								<form:input type="text" class="input-xlarge" id="password_db"
 									name="password_db" path="password_db" />
-								<span>postgres</span>
+								<span style="color:grey">Ej: postgres</span>
 							</div>
 						</div>												
 						<div class="form-actions">
@@ -58,5 +60,6 @@
 
 	</tr>
 </table>
+</center>
 
 <jsp:include page="../shared/footer.jsp"></jsp:include>
