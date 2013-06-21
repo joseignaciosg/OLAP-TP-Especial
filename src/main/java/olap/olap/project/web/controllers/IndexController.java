@@ -132,7 +132,13 @@ public class IndexController {
 		final ModelAndView mav = new ModelAndView();
 		SessionManager man = (SessionManager) req.getAttribute("manager");
 		CubeApi ca = man.getCubeApi();
-		Document outXml = ca.generateMDXAuto("out/out.xml");
+		Document outXml = null;
+		try {
+			outXml = ca.generateMDXAuto("out/out.xml");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		man.setOutXml(outXml);
 		return mav;
 	}

@@ -63,7 +63,6 @@ public class CubeApiImpl implements CubeApi {
 	public boolean setDBCredentials(String dbUrl, String name, String password) {
 		connectionManager = ConnectionManagerPostgreWithCredentials
 				.setConnectionManagerWithCredentials(dbUrl, name, password);
-
 		return false;
 	}
 
@@ -75,19 +74,22 @@ public class CubeApiImpl implements CubeApi {
 		multiDim.print();
 	}
 
-	public Document generateMDXAuto(String outFileName) throws IOException {
+	public Document generateMDXAuto(String outFileName) throws Exception {
 
 		XmlConverter xml = new XmlConverter();
-
+		Connection conn = null;
 		try {
-			createDimensions();
-			createFactTable();
+			conn = connectionManager.getConnectionWithCredentials();
+			conn.setAutoCommit(false);
+			createDimensions(conn);
+			createFactTable(conn);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			conn.rollback();
 		}
-
+		if (!conn.isClosed())
+			conn.commit();
+		connectionManager.closeConnection(conn);
 		return xml.generateXml(multiDim, outFileName);
 	}
 
@@ -228,16 +230,13 @@ public class CubeApiImpl implements CubeApi {
 		return xml.generateXml(multiDim, outFileName);
 	}
 
-	private void createFactTable() throws Exception {
-
-		final Connection conn = connectionManager
-				.getConnectionWithCredentials();
+	private void createFactTable(Connection conn) throws Exception {
 
 		// Map<Integer, String> parameters = new HashMap<Integer, String>();
 		// int key = 1;
 		// -----------------------------------------
 		// PREPARO EL STATEMENT
-		String query = "CREATE TABLE " + multiDim.getCube().getName() + " (\n";
+		String query = "CREATE TABLE " + multiDim.getCube().getName() + "_fact" + " (\n";
 		// -----------------------------------------
 		// AGREGO LAS MEASURES
 
@@ -253,36 +252,25 @@ public class CubeApiImpl implements CubeApi {
 		Set<String> dimensiones = multiDim.getCube().getDimensions().keySet();
 		for (String s : dimensiones) {
 			Dimension d = multiDim.getCube().getDimensions().get(s);
-			Set<Property> properties = d.getLevel().getProperties();
-			for (Property p : properties) {
-				if (p.isPK()) {
-					String type = SQLAttribute.valueOf(
-							p.getType().toUpperCase()).toString();
-					query += s + "_" + p.getName() + " " + type
-							+ " REFERENCES " + d.getName() + "("
-							+ d.getLevel().getName() + "_" + p.getName()
-							+ ") ON DELETE CASCADE ,\n";
-				}
-			}
+
+			query += s + "_id integer REFERENCES " + d.getName() + "("
+					+ d.getName() + "_id) ON DELETE CASCADE ,\n";
 		}
+
 		// -----------------------------------------
 		// AGREGO LAS PRIMARY KEYS
 		query += "PRIMARY KEY (";
 		boolean first = true;
 		for (String s : dimensiones) {
 			Dimension d = multiDim.getCube().getDimensions().get(s);
-			Set<Property> properties = d.getLevel().getProperties();
-			for (Property p : properties) {
-				if (p.isPK()) {
-					if (!first) {
-						query += "," + s + "_" + p.getName();
-					} else {
-						query += s + "_" + p.getName();
-						first = false;
-					}
 
-				}
+			if (!first) {
+				query += "," + s + "_id";
+			} else {
+				query += s + "_id";
+				first = false;
 			}
+
 		}
 		query += " )\n)";
 		// -----------------------------------------
@@ -294,55 +282,55 @@ public class CubeApiImpl implements CubeApi {
 
 		System.out.println(statement.toString());
 		statement.execute();
-		connectionManager.closeConnection(conn);
 
 	}
 
-	private void createDimensions() throws Exception {
+	private void createDimensions(Connection conn) throws Exception {
 
-		final Connection conn = connectionManager
-				.getConnectionWithCredentials();
-		boolean first = true;
 		Collection<Dimension> dimensions = multiDim.getCube().getDimensions()
 				.values();
 
 		Set<Dimension> nonRepeat = new HashSet<Dimension>(dimensions);
 		for (Dimension d : nonRepeat) {
-			first = true;
 
 			String query = "CREATE TABLE " + d.getName() + " (\n";
 			Level level = d.getLevel();
+			query += d.getName() + "_id serial PRIMARY KEY, \n";
 			for (Property p : level.getProperties()) {
 				String type = SQLAttribute.valueOf(p.getType().toUpperCase())
 						.toString();
 				query += level.getName() + "_" + p.getName() + " " + type;
-				if (p.isPK())
-					query += " UNIQUE";
-				query += " , \n";
+
+				query += " ,\n";
 
 			}
+
 			for (Hierarchy h : d.getHierarchies()) {
 				for (Level l : h.getLevels()) {
 					for (Property p : l.getProperties()) {
 						String type = SQLAttribute.valueOf(
 								p.getType().toUpperCase()).toString();
 						query += l.getName() + "_" + p.getName() + " " + type
-								+ " , \n";
+								+ " ,\n";
 					}
 				}
 			}
-			query += "PRIMARY KEY( ";
-			for (Property p : level.getProperties()) {
-				if (p.isPK()) {
-					if (!first) {
-						query += ", " + level.getName() + "_" + p.getName();
-					} else {
-						query += level.getName() + "_" + p.getName();
-						first = false;
-					}
-				}
-			}
-			query += ") \n)";
+			query = query.substring(0, query.length() - 3);
+			query += "\n";
+			// query += "PRIMARY KEY( ";
+			// for (Property p : level.getProperties()) {
+			// if (p.isPK()) {
+			// if (!first) {
+			// query += ", " + level.getName() + "_" + p.getName();
+			// } else {
+			// query += level.getName() + "_" + p.getName();
+			// first = false;
+			// }
+			// }
+			// }
+			// query += ") ";
+
+			query += "\n)";
 			PreparedStatement statement = conn.prepareStatement(query);
 			System.out.println("-----------------------------");
 
@@ -351,33 +339,32 @@ public class CubeApiImpl implements CubeApi {
 
 		}
 
-		connectionManager.closeConnection(conn);
 	}
 
 	public boolean changePropertyName(String tableName, String propName,
 			String fieldName) {
 		System.out.println(tableName);
 		Dimension dim = multiDim.getDimensionValue(tableName);
-		String fieldType = getFieldType(tableName,fieldName);
-		/*tiene que chequar que el tipo sea correcto*/
-		return dim.changePropertyName(propName, fieldName,fieldType);
+		String fieldType = getFieldType(tableName, fieldName);
+		/* tiene que chequar que el tipo sea correcto */
+		return dim.changePropertyName(propName, fieldName, fieldType);
 	}
-	
-	private String getFieldType(String tableName, String fieldName){
+
+	private String getFieldType(String tableName, String fieldName) {
 		String type = null;
 		String q = "select * from " + tableName;
 		ResultSet rs;
 		int columnCount = 0;
 		Connection conn;
 		try {
-			conn= connectionManager
-					.getConnectionWithCredentials();
+			conn = connectionManager.getConnectionWithCredentials();
 			Statement st = conn.createStatement();
 			rs = st.executeQuery(q);
 			ResultSetMetaData rsmd = rs.getMetaData();
-			columnCount = rsmd.getColumnCount();;
-			for(int i=1; i <= columnCount;i++ ){
-				if (fieldName.equals(rsmd.getColumnName(i))){
+			columnCount = rsmd.getColumnCount();
+			;
+			for (int i = 1; i <= columnCount; i++) {
+				if (fieldName.equals(rsmd.getColumnName(i))) {
 					type = rsmd.getColumnTypeName(i);
 				}
 			}
@@ -386,5 +373,5 @@ public class CubeApiImpl implements CubeApi {
 		}
 		return type;
 	}
-	
+
 }
