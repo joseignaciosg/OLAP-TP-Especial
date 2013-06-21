@@ -3,8 +3,7 @@ OLAP-TP-Especial
 
 OLAP-TP-Especial
 
-http://localhost:8081/olap/bin/index/olap
-
+http://localhost:8080/[nombre-de-archivo-war]/bin/index/olap
 
 Es necesario tener instalado Postgres SQL
 
