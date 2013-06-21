@@ -44,7 +44,7 @@ public class Level {
 	public List<String> getPropertyNames(){
 		List<String> ret = new ArrayList<String>();
 		for(Property p: properties){
-			ret.add(p.getName());
+			ret.add(this.getName()+"_"+p.getName());
 		}
 		return ret;
 	}
@@ -53,7 +53,8 @@ public class Level {
 		Iterator<Property> it = properties.iterator();
 		while(it.hasNext()){
 			Property p = it.next();
-			if (p.getName().equals(oldName)){
+			String realName = this.getName()+"_"+p.getName();
+			if (realName.equals(oldName)){
 				String ptype = SQLAttribute.valueOf(p.getType().toUpperCase()).toString();
 				System.out.println("######## Property Type: "+ ptype );
 				System.out.println("######## Field    Type: "+ fieldType );

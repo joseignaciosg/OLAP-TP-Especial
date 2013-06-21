@@ -59,14 +59,14 @@ CREATE TABLE factory (
     latitud bigint,
     longitud bigint,
     staffqty bigint,
-    employer_name "char"[],
-    city_name "char"[],
+    employer_name varchar,
+    city_name varchar,
     fact_anual bigint,
     population bigint,
-    country_name "char"[],
-    gubernant "char"[],
-    "TipoIdRubro" "char"[],
-    "TipoDesc" "char"[]
+    country_name varchar,
+    gubernant varchar,
+    "TipoIdRubro" varchar,
+    "TipoDesc" varchar
 );
 
 
@@ -82,7 +82,7 @@ ALTER TABLE public.filtration OWNER TO postgres;
 
 
 CREATE TABLE substance (
-    denominacion "char"
+    denominacion varchar
 );
 
 
@@ -91,11 +91,11 @@ ALTER TABLE public.substance OWNER TO postgres;
 
 
 CREATE TABLE temporal (
-    dia "char"[],
+    dia varchar,
     mes bigint,
     year bigint,
     es_bisiesto boolean,
-    name "char"[]
+    name varchar
 );
 
 

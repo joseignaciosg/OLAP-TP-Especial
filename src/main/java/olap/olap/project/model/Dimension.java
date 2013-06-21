@@ -57,7 +57,7 @@ public class Dimension {
 	public List<String> getPropertyNames(){
 		List<String> ret = new ArrayList<String>();
 		for(Property p: level.getProperties()){
-			ret.add(p.getName());
+			ret.add(level.getName()+"_"+p.getName());
 		}
 		for(Hierarchy h: hierarchies){
 			ret.addAll(h.getPropertyNames());
@@ -70,7 +70,8 @@ public class Dimension {
 		boolean valid = true;
 		while (iter.hasNext()) {
 			Property p = iter.next();
-			if(p.getName().equals(oldName)){
+			String realName = level.getName()+"_"+p.getName();
+			if(realName.equals(oldName)){
 				String ptype = SQLAttribute.valueOf(p.getType().toUpperCase()).toString();
 				System.out.println("######## Property Type: "+ ptype );
 				System.out.println("######## Field    Type: "+ fieldType );
