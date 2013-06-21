@@ -75,6 +75,9 @@ public class Dimension {
 				String ptype = SQLAttribute.valueOf(p.getType().toUpperCase()).toString();
 				System.out.println("######## Property Type: "+ ptype );
 				System.out.println("######## Field    Type: "+ fieldType );
+				if(fieldType.matches("int*.")){
+					fieldType = "integer";
+				}
 				if ( ptype.equals(fieldType) ){
 					p.setName(newName);
 					return true;
