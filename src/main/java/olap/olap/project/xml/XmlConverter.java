@@ -68,7 +68,24 @@ public class XmlConverter {
 		Element cubeElem = schema.addElement("Cube");
 		cubeElem.addAttribute("name", multiDim.getCube().getName());
 		cubeElem.addAttribute("cache", "true");
-		Cube cube = multiDim.getCube();
+		Element cubeTable = cubeElem.addElement("Table");
+		cubeTable.addAttribute("name",multiDim.getCube().getName() + "_fact");
+		Cube cube = multiDim.getCube();	
+		for (Entry<String, Dimension> entry : multiDim.getCube()
+				.getDimensions().entrySet()) {
+			Element dim = cubeElem.addElement("Dimension");
+			Dimension dimension = entry.getValue();
+			dim.addAttribute("name", entry.getKey());
+			dim.addAttribute("foreignKey", entry.getKey() + "_id");
+			if (dimension.getName().equals("temporal")) {
+				dim.addAttribute("type", "TimeDimension");
+			}
+			
+			for (Hierarchy h : dimension.getHierarchies()) {
+				handleHierarchy(dim, h, entry.getKey());
+			}
+		}
+
 		for (Measure m : cube.getMeasures()) {
 			Element measure = cubeElem.addElement("Measure");
 			measure.addAttribute("aggregator", m.getAgg());
@@ -77,23 +94,9 @@ public class XmlConverter {
 					Attribute.valueOf(m.getType().toUpperCase()).toString());
 		}
 
-		for (Entry<String, Dimension> entry : multiDim.getCube()
-				.getDimensions().entrySet()) {
-			Element dim = cubeElem.addElement("Dimension");
-			Dimension dimension = entry.getValue();
-			dim.addAttribute("name", entry.getKey());
-			if (dimension.getName().equals("temporal")) {
-				dim.addAttribute("type", "TimeDimension");
-			}
-			for (Hierarchy h : dimension.getHierarchies()) {
-				handleHierarchy(dim, h, entry.getKey());
-			}
-		}
-
-
-//		XMLWriter writer = new XMLWriter(new FileWriter(fileName));
-//		writer.write(out);
-//		writer.close();
+		XMLWriter writer = new XMLWriter(new FileWriter(fileName));
+		writer.write(out);
+		writer.close();
 
 
 		return out;
@@ -103,16 +106,21 @@ public class XmlConverter {
 		Element hierarchy = dim.addElement("Hierarchy");
 		hierarchy.addAttribute("hasAll", "true");
 		hierarchy.addAttribute("name", h.getName());
+		hierarchy.addAttribute("primaryKey", h.getName() + "_id");
 		Element table = hierarchy.addElement("table");
-		table.addAttribute("name",dimName);
+		table.addAttribute("name",dimName + "_" + h.getName());
 		for (Level l : h.getLevels()) {
+			Element level = hierarchy.addElement("Level");
+			level.addAttribute("name", l.getName());
+			level.addAttribute("column", l.getName());
+			level.addAttribute("levelType", "Regular");
 			handleLevel(hierarchy, l);
 		}
 	}
 
 	private void handleLevel(Element hierarchy, Level l) {
 		for (Property p : l.getProperties()) {
-			Element level = hierarchy.addElement("Level");
+			Element level = hierarchy.addElement("Property");
 			level.addAttribute("name", l.getName() + "-" + p.getName());
 			level.addAttribute("column", l.getName() + "-" + p.getName());
 			level.addAttribute("type", Attribute.valueOf(p.getType().toUpperCase()).toString());
@@ -125,8 +133,14 @@ public class XmlConverter {
 		while (i.hasNext()) {
 			Element e = i.next();
 			if (e.getName().equals("measure")) {
+				//Pregunto si es st_union para cambiarlo y que levante en workbench
+				if (e.attributeValue("agg").equals("st_union")) {
+					cube.addMeasure(new Measure(e.attributeValue("name"), e
+							.attributeValue("type"),"sum"));
+				}else {
 				cube.addMeasure(new Measure(e.attributeValue("name"), e
 						.attributeValue("type"), e.attributeValue("agg")));
+				}
 			} else if (e.getName().equals("dimension")) {
 				String ptr = e.attributeValue("ptr");
 				Dimension dim = multiDim.getDimension(ptr);
