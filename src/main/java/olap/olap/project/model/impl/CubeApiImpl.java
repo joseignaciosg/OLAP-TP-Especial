@@ -86,10 +86,15 @@ public class CubeApiImpl implements CubeApi {
 		return names;
 	}
 
-	public boolean linkDimension(Dimension cubeDim, String dbTableName) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean linkDimension(String cubeDim, String dbTableName) {
+//		multiDim.getCube().get
+		
+		
+		
+		return multiDim.getCube().changeDimensionName(cubeDim, dbTableName);
 	}
+	
+	
 
 	public void generateMDXManual(String outFileName) {
 		// TODO Auto-generated method stub
