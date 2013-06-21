@@ -65,20 +65,28 @@ public class Dimension {
 		return ret;
 	}
 
-	public boolean changePropertyName(String oldName, String newName){
+	public boolean changePropertyName(String oldName, String newName, String fieldType){
 		Iterator<Property> iter = this.level.getProperties().iterator();
 		boolean valid = true;
 		while (iter.hasNext()) {
 			Property p = iter.next();
 			if(p.getName().equals(oldName)){
-				p.setName(newName);
-				return true;
+				String ptype = SQLAttribute.valueOf(p.getType().toUpperCase()).toString();
+				System.out.println("######## Property Type: "+ ptype );
+				System.out.println("######## Field    Type: "+ fieldType );
+				if ( ptype.equals(fieldType) ){
+					p.setName(newName);
+					return true;
+				}else{
+					return false;
+				}
+				
 			}
 		}
 		Iterator<Hierarchy> it = this.hierarchies.iterator();
 		while (it.hasNext()) {
 			Hierarchy h = it.next();
-			valid &= h.changePropertyName( oldName,  newName);
+			valid &= h.changePropertyName( oldName,  newName, fieldType);
 		}
 		return valid;
 	}

@@ -279,8 +279,35 @@ public class CubeApiImpl implements CubeApi {
 	public boolean changePropertyName(String tableName, String propName, String fieldName){
 		System.out.println(tableName);
 		Dimension dim = multiDim.getDimensionValue(tableName);
+		String fieldType = getFieldType(tableName,fieldName);
 		/*tiene que chequar que el tipo sea correcto*/
-		return dim.changePropertyName(propName, fieldName);
+		return dim.changePropertyName(propName, fieldName,fieldType);
 	}
+	
+	private String getFieldType(String tableName, String fieldName){
+		String type = null;
+		String q = "select * from " + tableName;
+		ResultSet rs;
+		int columnCount = 0;
+		Connection conn;
+		try {
+			conn= connectionManager
+					.getConnectionWithCredentials();
+			Statement st = conn.createStatement();
+			rs = st.executeQuery(q);
+			ResultSetMetaData rsmd = rs.getMetaData();
+			columnCount = rsmd.getColumnCount();;
+			for(int i=1; i <= columnCount;i++ ){
+				if (fieldName.equals(rsmd.getColumnName(i))){
+					type = rsmd.getColumnTypeName(i);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return type;
+	}
+	
+	
 	
 }

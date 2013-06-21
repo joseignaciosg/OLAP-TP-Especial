@@ -233,7 +233,7 @@ public class IndexController {
 	/*MANUAL MODE STEP 2*/
 	@RequestMapping(method = RequestMethod.POST)
 	protected ModelAndView manualModeUpdateFieldsPost(final HttpServletRequest req) throws SQLException, Exception {
-		final ModelAndView mav = new ModelAndView("index/manualMode");
+		final ModelAndView mav = new ModelAndView();
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
 		
@@ -247,7 +247,7 @@ public class IndexController {
 		for (Map.Entry<String, String[]> entry : values.entrySet()){
 			String value = entry.getValue()[0].split("/")[0];
 			String tname= entry.getValue()[0].split("/")[1];
-			/*devuelve falso si el tipo no es el miemo*/
+			/*se controla que el tipo sea el mismo dentro de chagePropertyName*/
 			valid = ca.changePropertyName(tname, entry.getKey(), value);
 			if (!valid){
 				fieldName = entry.getKey();
