@@ -13,8 +13,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import olap.olap.project.model.Cube;
 import olap.olap.project.model.Dimension;
 import olap.olap.project.model.Hierarchy;
 import olap.olap.project.model.Level;
@@ -34,10 +36,30 @@ public class CubeApiImpl implements CubeApi {
 
 	MultiDim multiDim;
 	ConnectionManager connectionManager;
+	private String factTableName; /*el nombre de la fact table en la base de datos*/
+	
 
 	public CubeApiImpl() {
+		this.factTableName = null;
 	}
 
+	public String getFactTableName(){
+		return this.factTableName;
+	}
+	
+	
+	public boolean setFactTableName(String name){
+		this.factTableName = name;
+		int propCount = getFactTablePropertyCount();
+		int fieldCount = getTableFieldsCount(name);
+		System.out.println("setFactTableName: propCount:" +propCount+ " fieldCount:" +fieldCount );
+		if ( propCount != fieldCount ){
+			return false;
+		}
+		return true;
+	}
+	
+	
 	public boolean setDBCredentials(String dbUrl, String name, String password) {
 		connectionManager = ConnectionManagerPostgreWithCredentials
 				.setConnectionManagerWithCredentials(dbUrl, name, password);
@@ -123,6 +145,59 @@ public class CubeApiImpl implements CubeApi {
 		}
 		return null;
 	}
+	
+
+	
+	public int getFactTablePropertyCount(){
+		Cube cube = multiDim.getCube();
+		return cube.getMeasures().size() + cube.getDimensions().size();
+	}
+	
+	public List<String> getFactTableProperties(){
+		Cube cube = multiDim.getCube();
+		List<String> ret = new ArrayList<String>();
+		Iterator<Measure> it = cube.getMeasures().iterator();
+		while(it.hasNext()){
+			Measure m = it.next();
+			ret.add(m.getName());
+		}	
+		Iterator<String> it2 = cube.getDimensions().keySet().iterator();
+	    while (it2.hasNext()) {
+	        String dim = it2.next();
+	        ret.add(dim);
+	    }
+	    return ret;
+	}
+	
+	
+	public boolean changeFactTablePropertyName(String propName, String fieldName){
+		/*ya se tiene que haber likeado una fact table de la DB*/
+		if ( factTableName == null ){
+			return false;
+		}
+		Cube cube = multiDim.getCube();
+		Iterator<Measure> it = cube.getMeasures().iterator();
+		while(it.hasNext()){
+			Measure m = it.next();
+			if (m.getName().equals(propName)){
+				String mtype = SQLAttribute.valueOf(m.getType().toUpperCase()).toString();
+				String ftype = getFieldType(factTableName,fieldName);
+				if (mtype.equals(ftype)){
+					m.setName(fieldName);
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}	
+		Iterator<String> it2 = cube.getDimensions().keySet().iterator();
+	    while (it2.hasNext()) {
+	        String dimname = it2.next();
+	        /*TODO acá hay que validar lo de la foreign keys*/
+	    }
+	    return true;
+	}
+	
 
 	public boolean linkDimension(String cubeDim, String dbTableName) {
 		int columnCount = getTableFieldsCount(dbTableName);

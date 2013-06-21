@@ -148,7 +148,7 @@ public class IndexController {
 		return mav;
 	}
 
-	/* MANUAL MODE STEP 1 POST */
+	/* MANUAL MODE STEP 1 FORM */
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView manualMode(final HttpServletRequest req)
 			throws SQLException, Exception {
@@ -172,7 +172,7 @@ public class IndexController {
 		return mav;
 	}
 
-	/* MANUAL MODE STEP 1 */
+	/* MANUAL MODE STEP 1 POST */
 	@RequestMapping(method = RequestMethod.POST)
 	protected ModelAndView manualModeUpdateTables(final HttpServletRequest req)
 			throws SQLException, Exception {
@@ -186,10 +186,17 @@ public class IndexController {
 		/* the name of then first table with no matching */
 		String tableName = null;
 		for (Map.Entry<String, String[]> entry : values.entrySet()) {
-			valid = ca.linkDimension(entry.getKey(), entry.getValue()[0]);
+			/* FACT TABLE CASE */
+			dimName = entry.getKey();
+			tableName = entry.getValue()[0];
+			if ("facttable".equals(dimName)) {
+				valid = ca.setFactTableName(tableName);
+				System.out.println("CHANGING FACT TABLE NAME: " + valid);
+			} else {
+				valid = ca.linkDimension(dimName, tableName);
+				
+			}
 			if (!valid) {
-				dimName = entry.getKey();
-				tableName = entry.getValue()[0];
 				break;
 			}
 		}
@@ -237,6 +244,11 @@ public class IndexController {
 					+ ca.getPropertiesForDimension(tname));
 		}
 
+		/* ADDING FACT TABLE */
+		String factTableName = ca.getFactTableName();
+		tables.add(new ListWrapper(ca.getFactTableName(), ca.getFactTableProperties(), ca
+				.getDBFieldsForTable(factTableName)));
+
 		mav.addObject("tables", tables);
 
 		return mav;
@@ -245,7 +257,6 @@ public class IndexController {
 
 	/* MANUAL MODE STEP 2 */
 	@RequestMapping(method = RequestMethod.POST)
-
 	protected ModelAndView manualModeUpdateFieldsPost(
 			final HttpServletRequest req) throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView("index/manualMode");
@@ -261,8 +272,8 @@ public class IndexController {
 		String propName = null;
 		for (Map.Entry<String, String[]> entry : values.entrySet()) {
 			String value = entry.getValue()[0].split("/")[0];
-			String tname= entry.getValue()[0].split("/")[1];
-			/*se controla que el tipo sea el mismo dentro de chagePropertyName*/
+			String tname = entry.getValue()[0].split("/")[1];
+			/* se controla que el tipo sea el mismo dentro de chagePropertyName */
 			valid = ca.changePropertyName(tname, entry.getKey(), value);
 			if (!valid) {
 				fieldName = entry.getKey();

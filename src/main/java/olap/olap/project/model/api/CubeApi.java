@@ -39,6 +39,10 @@ public interface CubeApi {
 
 	public List<String> getPropertiesForDimension(String table)
 			throws Exception;
+	
+	public String getFactTableName();
+	
+	public boolean setFactTableName(String name);
 
 	/*
 	 * Creates MDX out star xml and tables returns: MDX star xml
@@ -47,5 +51,17 @@ public interface CubeApi {
 
 	public boolean changePropertyName(String tableName, String propName,
 			String fieldName);
+	
+	/*para saber la cantidad de propiedades en la fact table*/
+	public int getFactTablePropertyCount();
+	
+	/*para obtener la lista de propiedades de la fact table*/
+	public List<String> getFactTableProperties();
+	
+	
+	public boolean changeFactTablePropertyName(String propName, String fieldName);
+	
+	
+	
 
 }
