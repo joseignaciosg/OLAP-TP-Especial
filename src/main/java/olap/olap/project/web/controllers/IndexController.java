@@ -176,6 +176,7 @@ public class IndexController {
 		for (Map.Entry<String, String[]> entry : values.entrySet()){
 			valid = ca.linkDimension(entry.getKey(), entry.getValue()[0]);
 			if (!valid){
+				System.out.println("NOT VALID");
 				//TODO guardar el nombre de la dimensión en la que falla para mostrar en el errro
 				break; 
 			}

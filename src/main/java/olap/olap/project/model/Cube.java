@@ -20,13 +20,21 @@ public class Cube {
 		this.name = name;
 	}
 	
-	public boolean changeDimensionName(String oldName, String newName){
-		boolean ret = false;
+	public boolean changeDimensionName(String oldName, String newName, int columnCount ){
+		boolean ret = true;
 		Dimension[] vals = (Dimension[]) dimensions.values().toArray();
 		for(int i = 0; i< vals.length; i++){
 			if (vals[i].getName().equals(oldName)){
+				int propertyCount = vals[i].getPropertyQty();
+				/*si la cantidad de propiedades de la dimensión en el
+				 * cubo es diferente a la cantidad de campos de la tabla
+				 * en la base de datos, entonces hubo un error
+				 * */
+				if (columnCount != propertyCount){
+					ret = false;
+					break;
+				}
 				vals[i].setName(newName);
-				ret = true;
 			}
 		}
 		return ret;

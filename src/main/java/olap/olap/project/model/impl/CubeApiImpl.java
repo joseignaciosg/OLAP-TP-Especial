@@ -6,13 +6,15 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import olap.olap.project.model.Attribute;
 import olap.olap.project.model.Dimension;
 import olap.olap.project.model.Hierarchy;
 import olap.olap.project.model.Level;
@@ -87,13 +89,27 @@ public class CubeApiImpl implements CubeApi {
 	}
 
 	public boolean linkDimension(String cubeDim, String dbTableName) {
-//		multiDim.getCube().get
-		
-		
-		
-		return multiDim.getCube().changeDimensionName(cubeDim, dbTableName);
+		int columnCount = getTableFieldsCount(dbTableName);
+		return multiDim.getCube().changeDimensionName(cubeDim, dbTableName,columnCount);
 	}
 	
+	private int getTableFieldsCount(String dbTableName){
+		String q = "select * from " + dbTableName;
+		ResultSet rs;
+		int columnCount = 0;
+		Connection conn;
+		try {
+			conn= connectionManager
+					.getConnectionWithCredentials();
+			Statement st = conn.createStatement();
+			rs = st.executeQuery(q);
+			ResultSetMetaData rsmd = rs.getMetaData();
+			columnCount = rsmd.getColumnCount();;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return columnCount;
+	}
 	
 
 	public void generateMDXManual(String outFileName) {
