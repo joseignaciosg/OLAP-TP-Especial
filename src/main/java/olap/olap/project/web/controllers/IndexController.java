@@ -172,21 +172,25 @@ public class IndexController {
 		System.out.println("VALUES + " + values);
 		
 		boolean valid = false;
-		
+		/*the name of then first dimension with no matching*/
+		String dimName = null;
+		/*the name of then first table with no matching*/
+		String tableName = null; 
 		for (Map.Entry<String, String[]> entry : values.entrySet()){
 			valid = ca.linkDimension(entry.getKey(), entry.getValue()[0]);
 			if (!valid){
 				System.out.println("NOT VALID	");
-				//TODO guardar el nombre de la dimensión en la que falla para mostrar en el error
+				dimName = entry.getKey();
+				tableName = entry.getValue()[0];
 				break; 
 			}
-			
 		}
 		
 		if (valid) {
 			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualModeUpdateFields");
 		} else {
-			mav.addObject("error", "Una de las asignaciones no es v&aacute;lida" );
+			mav.addObject("error", "La table " + tableName + " no tiene la misma"+
+						  " cantidad de propiedades que la dimensi&oacuten " + dimName );
 			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualMode");
 		}
 		return mav;
