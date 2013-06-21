@@ -6,11 +6,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
+import olap.olap.project.model.Dimension;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.springframework.web.multipart.MultipartFile;
-
-import olap.olap.project.model.Dimension;
 
 public interface CubeApi {
 
@@ -18,7 +17,6 @@ public interface CubeApi {
 
 	public void loadMultildimXml(File xmlfile) throws DocumentException,
 			IOException;
-	
 
 	/* -------------------- AUTOMATIC MODE ------------------------------- */
 
@@ -38,17 +36,16 @@ public interface CubeApi {
 	public boolean linkDimension(String cubeDim, String dbTableName);
 
 	public List<String> getDBFieldsForTable(String table) throws Exception;
-	
-	public List<String> getPropertiesForDimension(String table) throws Exception;
-	
 
-	
+	public List<String> getPropertiesForDimension(String table)
+			throws Exception;
+
 	/*
 	 * Creates MDX out star xml and tables returns: MDX star xml
 	 */
-	public void generateMDXManual(String outFileName);
+	public Document generateMDXManual(String outFileName) throws IOException;
 
-
-	public boolean changePropertyName(String tableName, String propName, String fieldName);
+	public boolean changePropertyName(String tableName, String propName,
+			String fieldName);
 
 }
