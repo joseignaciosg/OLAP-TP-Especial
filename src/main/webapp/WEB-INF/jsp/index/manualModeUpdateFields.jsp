@@ -21,21 +21,28 @@
 
 
 
-<form:form method="POST" class="form-horizontal span8 offset2"
+<form:form method="POST" class="form-horizontal span10 offset2"
 	action="manualModeUpdateFieldsPost">
 		
 	<!-- for each Table -->
 	<c:forEach var="table" items="${tables}" varStatus="status">
-		<h4>${table.tableName}</h4> 
-		<c:forEach var="prop" items="${table.propList}" >
-				${prop}
-				<select name="${prop}">
-				<c:forEach var="field" items="${table.fieldList}" >
-					<option value="${field}" label="${field}" />
-				</c:forEach>
-				</select> 
+		  <fieldset>
+		   		<legend>${table.tableName}</legend>
+				<c:forEach var="prop" items="${table.propList}" >
+					<div class="pull-left inline" >
+						<label>${prop}:</label>
+						<select name="${prop}">
+							<div class="pull-left" >
+								<c:forEach var="field" items="${table.fieldList}" >
+									<option value="${field}" label="${field}" />
+								</c:forEach>
+							</div>
+						</select>
+					</div> 
+		  </fieldset>
 		</c:forEach>
 		<br><br>
+		<br> <br>	
 	</c:forEach>
 	<br> <br> <br>
 	 <input class="btn" type="submit" value="Establecer asignaciones" />

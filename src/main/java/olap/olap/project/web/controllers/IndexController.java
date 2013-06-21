@@ -209,7 +209,7 @@ public class IndexController {
 	
 		List<ListWrapper> tables = new ArrayList<ListWrapper>();
 		for(String tname: tableNames){
-			ListWrapper tableList = new ListWrapper(tname, ca.getDBFieldsForTable(tname), ca.getDBFieldsForTable(tname));
+			ListWrapper tableList = new ListWrapper(tname, ca.getPropertiesForDimension(tname), ca.getDBFieldsForTable(tname));
 			tables.add(tableList);
 			System.out.println("FIELD LIST: " + ca.getDBFieldsForTable(tname));
 			System.out.println("PROP LIST: " + ca.getPropertiesForDimension(tname));
@@ -233,7 +233,7 @@ public class IndexController {
 			
 		} else {
 			mav.addObject("error", "Una de las asignaciones no es v&aacute;lida" );
-			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualMode");
+			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualModeUpdateFields");
 			return mav;
 		}
 		return this.manualMode(req);
