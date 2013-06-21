@@ -7,7 +7,7 @@ public class Dimension {
 
 	private Set<Hierarchy> hierarchies = new HashSet<Hierarchy>();
 	private Level level;
-	private String name;
+	private String name; //temporal
 
 	public Dimension(String name) {
 		this(name, null);
@@ -37,6 +37,10 @@ public class Dimension {
 	public String getName() {
 		return name;
 	}
+	
+	public void setName(String newName) {
+		this.name = newName;
+	}
 
 	public Integer getPropertyQty() {
 		Integer qty = 0;
@@ -54,4 +58,6 @@ public class Dimension {
 			h.print();
 		}
 	}
+
+	
 }

@@ -34,7 +34,7 @@ public interface CubeApi {
 
 	public List<String> getDBTableNames() throws SQLException, Exception;
 
-	public boolean linkDimension(Dimension cubeDim, String dbTableName);
+	public boolean linkDimension(String cubeDim, String dbTableName);
 
 	/*
 	 * Creates MDX out star xml and tables returns: MDX star xml

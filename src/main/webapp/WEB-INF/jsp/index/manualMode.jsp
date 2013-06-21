@@ -36,7 +36,7 @@
 	<!-- DIMENSION TABLES -->
 	<c:forEach var="dim" items="${dimensions}" varStatus="status1">
 		<h4>${dim.name}</h4> 
-		<select name="dim${status1.count}">
+		<select name="${dim.name}">
 			<c:forEach var="name" items="${tableNames}" varStatus="status2">
 				<option value="${name}" label="${name}" />
 			</c:forEach>

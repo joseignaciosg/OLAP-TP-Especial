@@ -8,12 +8,28 @@ import java.util.Set;
 
 public class Cube {
 
+	
+	//String inicio , fin... 
+	//Dimension.getName(temportal)
 	private Map<String, Dimension> dimensions = new HashMap<String, Dimension>();
 	private Set<Measure> measures = new HashSet<Measure>();
 	private String name;
 	
+	
 	public Cube(String name) {
 		this.name = name;
+	}
+	
+	public boolean changeDimensionName(String oldName, String newName){
+		boolean ret = false;
+		Dimension[] vals = (Dimension[]) dimensions.values().toArray();
+		for(int i = 0; i< vals.length; i++){
+			if (vals[i].getName().equals(oldName)){
+				vals[i].setName(newName);
+				ret = true;
+			}
+		}
+		return ret;
 	}
 	
 	public void addDimension(String dimName, Dimension dim) {
