@@ -26,5 +26,9 @@ public class Measure {
 	public void print() {
 		System.out.println("MEASURE: " +name +", type: " +type+", agg: "+agg);
 	}
+
+	public void setName(String fieldName) {
+		this.name = fieldName;
+	}
 	
 }

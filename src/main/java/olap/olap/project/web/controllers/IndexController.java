@@ -132,7 +132,13 @@ public class IndexController {
 		final ModelAndView mav = new ModelAndView();
 		SessionManager man = (SessionManager) req.getAttribute("manager");
 		CubeApi ca = man.getCubeApi();
-		Document outXml = ca.generateMDXAuto("out/out.xml");
+		Document outXml = null;
+		try {
+			outXml = ca.generateMDXAuto("out/out.xml");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		man.setOutXml(outXml);
 		return mav;
 	}
@@ -148,7 +154,7 @@ public class IndexController {
 		return mav;
 	}
 
-	/* MANUAL MODE STEP 1 POST */
+	/* MANUAL MODE STEP 1 FORM */
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView manualMode(final HttpServletRequest req)
 			throws SQLException, Exception {
@@ -172,7 +178,7 @@ public class IndexController {
 		return mav;
 	}
 
-	/* MANUAL MODE STEP 1 */
+	/* MANUAL MODE STEP 1 POST */
 	@RequestMapping(method = RequestMethod.POST)
 	protected ModelAndView manualModeUpdateTables(final HttpServletRequest req)
 			throws SQLException, Exception {
@@ -186,10 +192,16 @@ public class IndexController {
 		/* the name of then first table with no matching */
 		String tableName = null;
 		for (Map.Entry<String, String[]> entry : values.entrySet()) {
-			valid = ca.linkDimension(entry.getKey(), entry.getValue()[0]);
+			/* FACT TABLE CASE */
+			dimName = entry.getKey();
+			tableName = entry.getValue()[0];
+			if ("facttable".equals(dimName)) {
+				valid = ca.setFactTableName(tableName);
+				System.out.println("CHANGING FACT TABLE NAME: " + valid);
+			} else {
+				valid = ca.linkDimension(dimName, tableName);
+			}
 			if (!valid) {
-				dimName = entry.getKey();
-				tableName = entry.getValue()[0];
 				break;
 			}
 		}
@@ -198,7 +210,7 @@ public class IndexController {
 			mav.setViewName("redirect:" + req.getServletPath()
 					+ "/index/manualModeUpdateFields");
 		} else {
-			mav.addObject("error", "La table " + tableName
+			mav.addObject("error", "La tabla " + tableName
 					+ " no tiene la misma"
 					+ " cantidad de propiedades que la dimensi&oacuten "
 					+ dimName);
@@ -224,7 +236,6 @@ public class IndexController {
 		Collection<Dimension> dimensions = ca.getCubeDimensions();
 		Set<Dimension> tableNames = new HashSet<Dimension>(dimensions);
 
-		/* TODO hacer que se pueda elegir un primary key */
 		List<ListWrapper> tables = new ArrayList<ListWrapper>();
 		for (Dimension d : tableNames) {
 			String tname = d.getName();
@@ -237,6 +248,11 @@ public class IndexController {
 					+ ca.getPropertiesForDimension(tname));
 		}
 
+		/* ADDING FACT TABLE */
+		String factTableName = ca.getFactTableName();
+		tables.add(new ListWrapper(ca.getFactTableName(), ca.getFactTableProperties(), ca
+				.getDBFieldsForTable(factTableName)));
+
 		mav.addObject("tables", tables);
 
 		return mav;
@@ -245,7 +261,6 @@ public class IndexController {
 
 	/* MANUAL MODE STEP 2 */
 	@RequestMapping(method = RequestMethod.POST)
-
 	protected ModelAndView manualModeUpdateFieldsPost(
 			final HttpServletRequest req) throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView("index/manualMode");
@@ -253,17 +268,22 @@ public class IndexController {
 		CubeApi ca = man.getCubeApi();
 
 		Map<String, String[]> values = req.getParameterMap();
-		System.out.println("VALUES:" + values);
 		boolean valid = false;
 		/* the name of then first dimension with no matching */
 		String fieldName = null;
 		/* the name of then first table with no matching */
 		String propName = null;
+		String tname = null;
 		for (Map.Entry<String, String[]> entry : values.entrySet()) {
 			String value = entry.getValue()[0].split("/")[0];
-			String tname= entry.getValue()[0].split("/")[1];
-			/*se controla que el tipo sea el mismo dentro de chagePropertyName*/
-			valid = ca.changePropertyName(tname, entry.getKey(), value);
+			tname = entry.getValue()[0].split("/")[1];
+			if (tname.equals(ca.getFactTableName())) {
+				/*FACT TABLE CASE*/
+				valid = ca.changeFactTablePropertyName( entry.getKey(), value);
+			} else {
+				valid = ca.changePropertyName(tname, entry.getKey(), value);
+			}
+			
 			if (!valid) {
 				fieldName = entry.getKey();
 				propName = value;
@@ -275,8 +295,10 @@ public class IndexController {
 			mav.setViewName("redirect:" + req.getServletPath()
 					+ "/index/manualDownloadMode");
 		} else {
-			mav.addObject("error",
-					"Una de las asignaciones no es v&aacute;lida");
+			mav.addObject("error", "En la tabla "+ tname + 
+					" El tipo de " + propName
+					+ " no coindide de con el tipo de "
+					+ fieldName);
 			mav.setViewName("redirect:" + req.getServletPath()
 					+ "/index/manualModeUpdateFields");
 		}

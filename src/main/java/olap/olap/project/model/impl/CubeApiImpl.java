@@ -13,8 +13,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import olap.olap.project.model.Cube;
 import olap.olap.project.model.Dimension;
 import olap.olap.project.model.Hierarchy;
 import olap.olap.project.model.Level;
@@ -34,14 +36,33 @@ public class CubeApiImpl implements CubeApi {
 
 	MultiDim multiDim;
 	ConnectionManager connectionManager;
+	private String factTableName; /*el nombre de la fact table en la base de datos*/
+	
 
 	public CubeApiImpl() {
+		this.factTableName = null;
 	}
 
+	public String getFactTableName(){
+		return this.factTableName;
+	}
+	
+	
+	public boolean setFactTableName(String name){
+		this.factTableName = name;
+		int propCount = getFactTablePropertyCount();
+		int fieldCount = getTableFieldsCount(name);
+		System.out.println("setFactTableName: propCount:" +propCount+ " fieldCount:" +fieldCount );
+		if ( propCount != fieldCount ){
+			return false;
+		}
+		return true;
+	}
+	
+	
 	public boolean setDBCredentials(String dbUrl, String name, String password) {
 		connectionManager = ConnectionManagerPostgreWithCredentials
 				.setConnectionManagerWithCredentials(dbUrl, name, password);
-
 		return false;
 	}
 
@@ -53,19 +74,22 @@ public class CubeApiImpl implements CubeApi {
 		multiDim.print();
 	}
 
-	public Document generateMDXAuto(String outFileName) throws IOException {
+	public Document generateMDXAuto(String outFileName) throws Exception {
 
 		XmlConverter xml = new XmlConverter();
-
+		Connection conn = null;
 		try {
-			createDimensions();
-			createFactTable();
+			conn = connectionManager.getConnectionWithCredentials();
+			conn.setAutoCommit(false);
+			createDimensions(conn);
+			createFactTable(conn);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			conn.rollback();
 		}
-
+		if (!conn.isClosed())
+			conn.commit();
+		connectionManager.closeConnection(conn);
 		return xml.generateXml(multiDim, outFileName);
 	}
 
@@ -123,6 +147,77 @@ public class CubeApiImpl implements CubeApi {
 		}
 		return null;
 	}
+	
+
+	
+	public int getFactTablePropertyCount(){
+		Cube cube = multiDim.getCube();
+		return cube.getMeasures().size() + cube.getDimensions().size();
+	}
+	
+	public List<String> getFactTableProperties(){
+		Cube cube = multiDim.getCube();
+		List<String> ret = new ArrayList<String>();
+		Iterator<Measure> it = cube.getMeasures().iterator();
+		while(it.hasNext()){
+			Measure m = it.next();
+			ret.add(m.getName());
+		}	
+		Iterator<String> it2 = cube.getDimensions().keySet().iterator();
+	    while (it2.hasNext()) {
+	        String dim = it2.next();
+	        ret.add(dim);
+	    }
+	    return ret;
+	}
+	
+	
+	public boolean changeFactTablePropertyName(String propName, String fieldName){
+		/*ya se tiene que haber likeado una fact table de la DB*/
+		if ( factTableName == null ){
+			return false;
+		}
+		Cube cube = multiDim.getCube();
+		Iterator<Measure> it = cube.getMeasures().iterator();
+		while(it.hasNext()){
+			Measure m = it.next();
+			if (m.getName().equals(propName)){
+				String mtype = SQLAttribute.valueOf(m.getType().toUpperCase()).toString().toLowerCase();
+				String ftype = getFieldType(factTableName,fieldName);
+				if(ftype.equals("int4")){
+					ftype = "integer";
+				}
+				System.out.println("---------------------");
+				System.out.println("mtype: " +mtype );
+				System.out.println("ftype: " +ftype );
+				if (mtype.equals(ftype)){
+					m.setName(fieldName);
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}	
+		Iterator<String> it2 = cube.getDimensions().keySet().iterator();
+	    while (it2.hasNext()) {
+	        String dimname = it2.next();
+	        if (dimname.equals(propName)){
+	        	String ftype = getFieldType(factTableName,fieldName);
+	        	if (!ftype.equals("integer") && !ftype.equals("int4") ){
+	        		System.out.println("------·########·---------------");
+					System.out.println("TYPE: " +ftype );
+	        		return false;
+	        	}else{
+	        		Dimension obj = cube.getDimensions().remove(propName);
+	        		cube.getDimensions().put(fieldName, obj);
+	        		return true;
+	        	}
+	        }
+	        
+	    }
+	    return true;
+	}
+	
 
 	public boolean linkDimension(String cubeDim, String dbTableName) {
 		int columnCount = getTableFieldsCount(dbTableName);
@@ -153,10 +248,7 @@ public class CubeApiImpl implements CubeApi {
 		return xml.generateXml(multiDim, outFileName);
 	}
 
-	private void createFactTable() throws Exception {
-
-		final Connection conn = connectionManager
-				.getConnectionWithCredentials();
+	private void createFactTable(Connection conn) throws Exception {
 
 		// Map<Integer, String> parameters = new HashMap<Integer, String>();
 		// int key = 1;
@@ -189,7 +281,6 @@ public class CubeApiImpl implements CubeApi {
 		boolean first = true;
 		for (String s : dimensiones) {
 			Dimension d = multiDim.getCube().getDimensions().get(s);
-			
 
 			if (!first) {
 				query += "," + s + "_id";
@@ -209,21 +300,16 @@ public class CubeApiImpl implements CubeApi {
 
 		System.out.println(statement.toString());
 		statement.execute();
-		connectionManager.closeConnection(conn);
 
 	}
 
-	private void createDimensions() throws Exception {
+	private void createDimensions(Connection conn) throws Exception {
 
-		final Connection conn = connectionManager
-				.getConnectionWithCredentials();
-		boolean first = true;
 		Collection<Dimension> dimensions = multiDim.getCube().getDimensions()
 				.values();
 
 		Set<Dimension> nonRepeat = new HashSet<Dimension>(dimensions);
 		for (Dimension d : nonRepeat) {
-			first = true;
 
 			String query = "CREATE TABLE " + d.getName() + " (\n";
 			Level level = d.getLevel();
@@ -271,7 +357,6 @@ public class CubeApiImpl implements CubeApi {
 
 		}
 
-		connectionManager.closeConnection(conn);
 	}
 
 	public boolean changePropertyName(String tableName, String propName,
@@ -282,6 +367,7 @@ public class CubeApiImpl implements CubeApi {
 		/* tiene que chequar que el tipo sea correcto */
 		return dim.changePropertyName(propName, fieldName, fieldType);
 	}
+	
 
 	private String getFieldType(String tableName, String fieldName) {
 		String type = null;
