@@ -10,13 +10,13 @@
 <br />
 
 
-<h2>Tablas creadas y Documento XML modelo estrella generado correctamente</h2>
-
+<center><h2>Tablas creadas y Documento XML modelo estrella generado correctamente</h2>
+</center>
 <form:form name="downloadStarXmlForm" class="form-horizontal span8 offset2" action="downloadStarXml" method="GET">
 	<form:errors path="*" />
 	<fieldset>											
 		<div class="form-actions">
-			<input type="submit" class="btn btn-primary" value="Descargar XML estrella" />
+			<center><input type="submit" class="btn btn-primary" value="Descargar XML estrella" /></center>
 		</div>
 	</fieldset>
 </form:form>
