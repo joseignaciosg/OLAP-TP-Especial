@@ -1,6 +1,9 @@
 package olap.olap.project.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class Hierarchy {
@@ -37,4 +40,21 @@ public class Hierarchy {
 			qty += l.getProperyQty();
 		return qty;
 	}
+	
+	public List<String> getPropertyNames(){
+		List<String> ret = new ArrayList<String>();
+		for(Level l: levels){
+			ret.addAll(l.getPropertyNames());
+		}
+		return ret;
+	}
+	
+	public void changePropertyName(String oldName, String newName){
+		Iterator<Level> it = this.levels.iterator();
+		while (it.hasNext()) {
+			Level l = it.next();
+			l.changePropertyName(oldName, newName);
+		}
+	}
+	
 }

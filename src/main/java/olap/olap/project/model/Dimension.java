@@ -1,13 +1,16 @@
 package olap.olap.project.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class Dimension {
 
 	private Set<Hierarchy> hierarchies = new HashSet<Hierarchy>();
 	private Level level;
-	private String name;
+	private String name; //temporal
 
 	public Dimension(String name) {
 		this(name, null);
@@ -37,6 +40,10 @@ public class Dimension {
 	public String getName() {
 		return name;
 	}
+	
+	public void setName(String newName) {
+		this.name = newName;
+	}
 
 	public Integer getPropertyQty() {
 		Integer qty = 0;
@@ -46,7 +53,33 @@ public class Dimension {
 
 		return qty;
 	}
+	
+	public List<String> getPropertyNames(){
+		List<String> ret = new ArrayList<String>();
+		for(Property p: level.getProperties()){
+			ret.add(p.getName());
+		}
+		for(Hierarchy h: hierarchies){
+			ret.addAll(h.getPropertyNames());
+		}
+		return ret;
+	}
 
+	public void changePropertyName(String oldName, String newName){
+		Iterator<Property> iter = this.level.getProperties().iterator();
+		while (iter.hasNext()) {
+			Property p = iter.next();
+			if(p.getName().equals(oldName)){
+				p.setName(newName);
+			}
+		}
+		Iterator<Hierarchy> it = this.hierarchies.iterator();
+		while (it.hasNext()) {
+			Hierarchy h = it.next();
+			h.changePropertyName( oldName,  newName);
+		}
+	}
+	
 	public void print() {
 		System.out.println("DIM: " + name);
 		level.print();
@@ -54,4 +87,6 @@ public class Dimension {
 			h.print();
 		}
 	}
+
+	
 }

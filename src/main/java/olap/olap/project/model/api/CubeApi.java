@@ -18,6 +18,7 @@ public interface CubeApi {
 
 	public void loadMultildimXml(File xmlfile) throws DocumentException,
 			IOException;
+	
 
 	/* -------------------- AUTOMATIC MODE ------------------------------- */
 
@@ -34,8 +35,14 @@ public interface CubeApi {
 
 	public List<String> getDBTableNames() throws SQLException, Exception;
 
-	public boolean linkDimension(Dimension cubeDim, String dbTableName);
+	public boolean linkDimension(String cubeDim, String dbTableName);
 
+	public List<String> getDBFieldsForTable(String table) throws Exception;
+	
+	public List<String> getPropertiesForDimension(String table) throws Exception;
+	
+
+	
 	/*
 	 * Creates MDX out star xml and tables returns: MDX star xml
 	 */

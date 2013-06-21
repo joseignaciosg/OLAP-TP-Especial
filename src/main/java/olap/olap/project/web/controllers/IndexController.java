@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -135,6 +137,7 @@ public class IndexController {
 	}
 	
 	
+	/*MANUAL MODE STEP 1 POST*/
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView manualMode(final HttpServletRequest req) throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView();
@@ -142,11 +145,9 @@ public class IndexController {
 		CubeApi ca  = man.getCubeApi();
 		
 		String error = (String) req.getParameter("error");
-		System.out.println("eroajdhjas" +error);
 		if( error !=  null){
 			mav.addObject("error", error);
 		}
-		
 		
 		/*getting table names*/
 		List<String> tableNames = ca.getDBTableNames();
@@ -158,14 +159,79 @@ public class IndexController {
 		return mav;
 	}
 	
+	/*MANUAL MODE STEP 1*/
 	@RequestMapping(method = RequestMethod.POST)
-	protected ModelAndView manualModeUpdateTables(final HttpServletRequest req) throws SQLException, Exception {
+	protected ModelAndView manualModeUpdateTables( final HttpServletRequest req) throws SQLException, Exception {
+		final ModelAndView mav = new ModelAndView("index/manualMode");
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
+		Map<String,String[]> values = req.getParameterMap();
+		System.out.println("VALUES + " + values);
+		boolean valid = false;
+		/*the name of then first dimension with no matching*/
+		String dimName = null;
+		/*the name of then first table with no matching*/
+		String tableName = null; 
+		for (Map.Entry<String, String[]> entry : values.entrySet()){
+			valid = ca.linkDimension(entry.getKey(), entry.getValue()[0]);
+			if (!valid){
+				System.out.println("NOT VALID	");
+				dimName = entry.getKey();
+				tableName = entry.getValue()[0];
+				break; 
+			}
+		}
+		
+		if (valid) {
+			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualModeUpdateFields");
+		} else {
+			mav.addObject("error", "La table " + tableName + " no tiene la misma"+
+						  " cantidad de propiedades que la dimensi&oacuten " + dimName );
+			mav.setViewName("redirect:" + req.getServletPath() + "/index/manualMode");
+		}
+		return mav;
+	}
+	
+	/*MANUAL MODE STEP 2 FORM*/
+	@RequestMapping(method = RequestMethod.GET)
+	protected ModelAndView manualModeUpdateFields(final HttpServletRequest req) throws SQLException, Exception {
+		final ModelAndView mav = new ModelAndView();	
+		String error = (String) req.getParameter("error");
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
+		if( error !=  null){
+			mav.addObject("error", error);
+		}
+		
+		/*getting table names*/
+		List<String> tableNames = ca.getDBTableNames();
+		mav.addObject("tableNames", tableNames);
+		
+		String fieldListName;
+		String propertyListName;
+		for(String tname: tableNames){
+			fieldListName = tname + "Fields";
+			propertyListName = tname + "Properties";
+			mav.addObject(fieldListName, ca.getDBFieldsForTable(tname));
+			mav.addObject(propertyListName, ca.getPropertiesForDimension(tname));
+			System.out.println("FIELD LIST: " + ca.getDBFieldsForTable(tname));
+			System.out.println("PROP LIST: " + ca.getPropertiesForDimension(tname));
+		}
+				
+		/*getting cube dimensions*/
+		Collection<Dimension> dimensions = ca.getCubeDimensions();
+		
+		return mav;
+		
+	}
+	
+	/*MANUAL MODE STEP 2*/
+	@RequestMapping(method = RequestMethod.POST)
+	protected ModelAndView manualModeUpdateFieldsPost(final HttpServletRequest req) throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView("index/manualMode");
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
 		
-		//TODO link dimension for each of the table names
-		//ca.linkDimension(cubeDim, dbTableName);
 		boolean valid = false;
 		if (valid) {
 			
@@ -175,9 +241,8 @@ public class IndexController {
 			return mav;
 		}
 		return this.manualMode(req);
-		
-		
 	}
+	
 	
 	@RequestMapping(method = RequestMethod.POST)
 	protected ModelAndView downloadStarXml(final HttpServletResponse response,
