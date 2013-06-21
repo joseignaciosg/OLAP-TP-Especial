@@ -182,8 +182,14 @@ public class CubeApiImpl implements CubeApi {
 		while(it.hasNext()){
 			Measure m = it.next();
 			if (m.getName().equals(propName)){
-				String mtype = SQLAttribute.valueOf(m.getType().toUpperCase()).toString();
+				String mtype = SQLAttribute.valueOf(m.getType().toUpperCase()).toString().toLowerCase();
 				String ftype = getFieldType(factTableName,fieldName);
+				if(ftype.equals("int4")){
+					ftype = "integer";
+				}
+				System.out.println("---------------------");
+				System.out.println("mtype: " +mtype );
+				System.out.println("ftype: " +ftype );
 				if (mtype.equals(ftype)){
 					m.setName(fieldName);
 					return true;
@@ -195,7 +201,19 @@ public class CubeApiImpl implements CubeApi {
 		Iterator<String> it2 = cube.getDimensions().keySet().iterator();
 	    while (it2.hasNext()) {
 	        String dimname = it2.next();
-	        /*TODO acá hay que validar lo de la foreign keys*/
+	        if (dimname.equals(propName)){
+	        	String ftype = getFieldType(factTableName,fieldName);
+	        	if (!ftype.equals("integer") && !ftype.equals("int4") ){
+	        		System.out.println("------·########·---------------");
+					System.out.println("TYPE: " +ftype );
+	        		return false;
+	        	}else{
+	        		Dimension obj = cube.getDimensions().remove(propName);
+	        		cube.getDimensions().put(fieldName, obj);
+	        		return true;
+	        	}
+	        }
+	        
 	    }
 	    return true;
 	}
@@ -349,6 +367,7 @@ public class CubeApiImpl implements CubeApi {
 		/* tiene que chequar que el tipo sea correcto */
 		return dim.changePropertyName(propName, fieldName, fieldType);
 	}
+	
 
 	private String getFieldType(String tableName, String fieldName) {
 		String type = null;

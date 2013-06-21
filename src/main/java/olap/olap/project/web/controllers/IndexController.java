@@ -200,7 +200,6 @@ public class IndexController {
 				System.out.println("CHANGING FACT TABLE NAME: " + valid);
 			} else {
 				valid = ca.linkDimension(dimName, tableName);
-				
 			}
 			if (!valid) {
 				break;
@@ -211,7 +210,7 @@ public class IndexController {
 			mav.setViewName("redirect:" + req.getServletPath()
 					+ "/index/manualModeUpdateFields");
 		} else {
-			mav.addObject("error", "La table " + tableName
+			mav.addObject("error", "La tabla " + tableName
 					+ " no tiene la misma"
 					+ " cantidad de propiedades que la dimensi&oacuten "
 					+ dimName);
@@ -237,7 +236,6 @@ public class IndexController {
 		Collection<Dimension> dimensions = ca.getCubeDimensions();
 		Set<Dimension> tableNames = new HashSet<Dimension>(dimensions);
 
-		/* TODO hacer que se pueda elegir un primary key */
 		List<ListWrapper> tables = new ArrayList<ListWrapper>();
 		for (Dimension d : tableNames) {
 			String tname = d.getName();
@@ -270,17 +268,22 @@ public class IndexController {
 		CubeApi ca = man.getCubeApi();
 
 		Map<String, String[]> values = req.getParameterMap();
-		System.out.println("VALUES:" + values);
 		boolean valid = false;
 		/* the name of then first dimension with no matching */
 		String fieldName = null;
 		/* the name of then first table with no matching */
 		String propName = null;
+		String tname = null;
 		for (Map.Entry<String, String[]> entry : values.entrySet()) {
 			String value = entry.getValue()[0].split("/")[0];
-			String tname = entry.getValue()[0].split("/")[1];
-			/* se controla que el tipo sea el mismo dentro de chagePropertyName */
-			valid = ca.changePropertyName(tname, entry.getKey(), value);
+			tname = entry.getValue()[0].split("/")[1];
+			if (tname.equals(ca.getFactTableName())) {
+				/*FACT TABLE CASE*/
+				valid = ca.changeFactTablePropertyName( entry.getKey(), value);
+			} else {
+				valid = ca.changePropertyName(tname, entry.getKey(), value);
+			}
+			
 			if (!valid) {
 				fieldName = entry.getKey();
 				propName = value;
@@ -292,8 +295,10 @@ public class IndexController {
 			mav.setViewName("redirect:" + req.getServletPath()
 					+ "/index/manualDownloadMode");
 		} else {
-			mav.addObject("error",
-					"Una de las asignaciones no es v&aacute;lida");
+			mav.addObject("error", "En la tabla "+ tname + 
+					" El tipo de " + propName
+					+ " no coindide de con el tipo de "
+					+ fieldName);
 			mav.setViewName("redirect:" + req.getServletPath()
 					+ "/index/manualModeUpdateFields");
 		}

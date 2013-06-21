@@ -45,8 +45,8 @@ CREATE TABLE fact (
 	bademission numeric,
  	cloud integer,
 	factory integer,
-	inicio integer,
-	fin integer,
+	beg integer,
+	endD integer,
 	sustanciaDim integer
 );
 
