@@ -25,7 +25,7 @@ public interface CubeApi {
 	 * 
 	 * returns: MDX star xml
 	 */
-	public Document generateMDXAuto(String outFileName) throws IOException;
+	public Document generateMDXAuto(String outFileName) throws IOException, Exception;
 
 	/* -------------------- MANUAL MODE ------------------------------- */
 
