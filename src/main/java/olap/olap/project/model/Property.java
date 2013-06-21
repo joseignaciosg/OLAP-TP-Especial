@@ -24,6 +24,10 @@ public class Property {
 	public void print() {
 		System.out.println("PROP: "+name+", type:" + type + (isPK? " PK" :""));
 	}
+
+	public void setName(String newName) {
+		this.name = newName;
+	}
 	
 }
 

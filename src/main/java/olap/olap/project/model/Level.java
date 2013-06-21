@@ -1,6 +1,9 @@
 package olap.olap.project.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class Level {
@@ -37,6 +40,25 @@ public class Level {
 			p.print();
 		}
 	}
+	
+	public List<String> getPropertyNames(){
+		List<String> ret = new ArrayList<String>();
+		for(Property p: properties){
+			ret.add(p.getName());
+		}
+		return ret;
+	}
+	
+	public void changePropertyName(String oldName, String newName){
+		Iterator<Property> it = properties.iterator();
+		while(it.hasNext()){
+			Property p = it.next();
+			if (p.getName().equals(oldName)){
+				p.setName(newName);
+			}
+		}
+	}
+	
 
 	public Integer getProperyQty() {
 		return properties.size();

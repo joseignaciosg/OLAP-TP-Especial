@@ -145,7 +145,6 @@ public class IndexController {
 		CubeApi ca  = man.getCubeApi();
 		
 		String error = (String) req.getParameter("error");
-		System.out.println("eroajdhjas" +error);
 		if( error !=  null){
 			mav.addObject("error", error);
 		}
@@ -166,11 +165,8 @@ public class IndexController {
 		final ModelAndView mav = new ModelAndView("index/manualMode");
 		SessionManager man  = (SessionManager) req.getAttribute("manager");
 		CubeApi ca  = man.getCubeApi();
-		
 		Map<String,String[]> values = req.getParameterMap();
-		
 		System.out.println("VALUES + " + values);
-		
 		boolean valid = false;
 		/*the name of then first dimension with no matching*/
 		String dimName = null;
@@ -200,7 +196,33 @@ public class IndexController {
 	@RequestMapping(method = RequestMethod.GET)
 	protected ModelAndView manualModeUpdateFields(final HttpServletRequest req) throws SQLException, Exception {
 		final ModelAndView mav = new ModelAndView();	
+		String error = (String) req.getParameter("error");
+		SessionManager man  = (SessionManager) req.getAttribute("manager");
+		CubeApi ca  = man.getCubeApi();
+		if( error !=  null){
+			mav.addObject("error", error);
+		}
+		
+		/*getting table names*/
+		List<String> tableNames = ca.getDBTableNames();
+		mav.addObject("tableNames", tableNames);
+		
+		String fieldListName;
+		String propertyListName;
+		for(String tname: tableNames){
+			fieldListName = tname + "Fields";
+			propertyListName = tname + "Properties";
+			mav.addObject(fieldListName, ca.getDBFieldsForTable(tname));
+			mav.addObject(propertyListName, ca.getPropertiesForDimension(tname));
+			System.out.println("FIELD LIST: " + ca.getDBFieldsForTable(tname));
+			System.out.println("PROP LIST: " + ca.getPropertiesForDimension(tname));
+		}
+				
+		/*getting cube dimensions*/
+		Collection<Dimension> dimensions = ca.getCubeDimensions();
+		
 		return mav;
+		
 	}
 	
 	/*MANUAL MODE STEP 2*/

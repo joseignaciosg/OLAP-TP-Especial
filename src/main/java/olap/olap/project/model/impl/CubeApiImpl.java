@@ -7,11 +7,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -87,7 +87,41 @@ public class CubeApiImpl implements CubeApi {
 		}
 		return names;
 	}
+	
+	public List<String> getDBFieldsForTable(String table) throws Exception {
+		String q = "select * from " + table;
+		List<String> ret = new ArrayList<String>();
+		ResultSet rs;
+		int columnCount = 0;
+		Connection conn;
+		try {
+			conn= connectionManager
+					.getConnectionWithCredentials();
+			Statement st = conn.createStatement();
+			rs = st.executeQuery(q);
+			ResultSetMetaData rsmd = rs.getMetaData();
+			columnCount = rsmd.getColumnCount();;
+			for(int i=1; i <= columnCount; i++){
+				ret.add(rs.getMetaData().getColumnName(i));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
 
+	public List<String> getPropertiesForDimension(String table) throws Exception{
+		 Collection<Dimension> dimensions = multiDim.getCube().getDimensions().values();
+		 Iterator<Dimension> it = dimensions.iterator();
+		 while(it.hasNext()){
+			 Dimension d = it.next();
+			 if(d.getName().equals(table)){
+				 return d.getPropertyNames();
+			 }
+		 }
+		 return null;
+	}
+	
 	public boolean linkDimension(String cubeDim, String dbTableName) {
 		int columnCount = getTableFieldsCount(dbTableName);
 		return multiDim.getCube().changeDimensionName(cubeDim, dbTableName,columnCount);
