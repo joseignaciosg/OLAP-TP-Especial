@@ -25,14 +25,16 @@
 	action="manualModeUpdateFieldsPost">
 		
 	<!-- for each Table -->
-	<c:forEach var="dim" items="${dimensions}" varStatus="status">
-		<h4>${dim.name}</h4> 
-		<select name="algo">
-			<!-- for each Field -->
-			<c:forEach var="name" items="${tableNames}" varStatus="status">
-				<option value="${name}" label="${name}" />
-			</c:forEach>
-		</select> 
+	<c:forEach var="table" items="${tables}" varStatus="status">
+		<h4>${table.tableName}</h4> 
+		<c:forEach var="prop" items="${table.propList}" >
+				${prop}
+				<select name="${prop}">
+				<c:forEach var="field" items="${table.fieldList}" >
+					<option value="${field}" label="${field}" />
+				</c:forEach>
+				</select> 
+		</c:forEach>
 		<br><br>
 	</c:forEach>
 	<br> <br> <br>

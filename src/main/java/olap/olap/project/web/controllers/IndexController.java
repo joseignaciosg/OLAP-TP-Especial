@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import olap.olap.project.model.Dimension;
+import olap.olap.project.model.ListWrapper;
 import olap.olap.project.model.api.CubeApi;
 import olap.olap.project.web.command.DBCredentialsForm;
 import olap.olap.project.web.command.UploadXmlForm;
@@ -205,21 +206,16 @@ public class IndexController {
 		
 		/*getting table names*/
 		List<String> tableNames = ca.getDBTableNames();
-		mav.addObject("tableNames", tableNames);
-		
-		String fieldListName;
-		String propertyListName;
+	
+		List<ListWrapper> tables = new ArrayList<ListWrapper>();
 		for(String tname: tableNames){
-			fieldListName = tname + "Fields";
-			propertyListName = tname + "Properties";
-			mav.addObject(fieldListName, ca.getDBFieldsForTable(tname));
-			mav.addObject(propertyListName, ca.getPropertiesForDimension(tname));
+			ListWrapper tableList = new ListWrapper(tname, ca.getDBFieldsForTable(tname), ca.getDBFieldsForTable(tname));
+			tables.add(tableList);
 			System.out.println("FIELD LIST: " + ca.getDBFieldsForTable(tname));
 			System.out.println("PROP LIST: " + ca.getPropertiesForDimension(tname));
 		}
-				
-		/*getting cube dimensions*/
-		Collection<Dimension> dimensions = ca.getCubeDimensions();
+			
+		mav.addObject("tables", tables);
 		
 		return mav;
 		
