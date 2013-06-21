@@ -161,7 +161,7 @@ public class CubeApiImpl implements CubeApi {
 		// int key = 1;
 		// -----------------------------------------
 		// PREPARO EL STATEMENT
-		String query = "CREATE TABLE " + multiDim.getCube().getName() + " (\n";
+		String query = "CREATE TABLE " + multiDim.getCube().getName() + "_fact" + " (\n";
 		// -----------------------------------------
 		// AGREGO LAS MEASURES
 
