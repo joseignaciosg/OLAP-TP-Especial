@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -165,7 +167,8 @@ public class IndexController {
 
 		/* getting cube dimensions */
 		Collection<Dimension> dimensions = ca.getCubeDimensions();
-		mav.addObject("dimensions", dimensions);
+		Set<Dimension> noRepeatDimensions = new HashSet(dimensions);
+		mav.addObject("dimensions", noRepeatDimensions);
 		return mav;
 	}
 
