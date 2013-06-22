@@ -73,7 +73,11 @@ public class XmlConverter {
 			Element dim = cubeElem.addElement("Dimension");
 			Dimension dimension = entry.getValue();
 			dim.addAttribute("name", entry.getKey());
-			dim.addAttribute("foreignKey", (entry.getKey() + "_" + entry.getValue().getPKName()).toLowerCase());
+			if ( isAutomatic) {
+				dim.addAttribute("foreignKey", (entry.getKey() + "_" + entry.getValue().getPKName()).toLowerCase());
+			}else {
+				dim.addAttribute("foreignKey", (entry.getValue().getPKName()).toLowerCase());
+			}
 			if (dimension.getName().equals("temporal")) {
 			//	dim.addAttribute("type", "TimeDimension");
 			}
@@ -118,7 +122,10 @@ public class XmlConverter {
 		
 		for (Property p : l.getProperties()) {
 			if ( p.isPK()) {
+				if(isAutomatic)
 				level.addAttribute("column",(l.getName() + "_" + p.getName()).toLowerCase());
+				else
+				level.addAttribute("column",(p.getName()));	
 			}
 			Element property = level.addElement("Property");
 			if (isAutomatic) {
