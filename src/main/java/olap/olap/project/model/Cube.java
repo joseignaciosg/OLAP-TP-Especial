@@ -25,8 +25,6 @@ public class Cube {
 
 	public boolean changeDimensionName(String oldName, String newName, int columnCount ){
 		boolean ret = true;
-		System.out.println("-----------"+dimensions.values());
-		System.out.println("-----------"+dimensions.values().toArray());
 		Collection<Dimension> vals = dimensions.values();
 		Iterator<Dimension> it = vals.iterator();
 		Dimension d;
@@ -39,7 +37,6 @@ public class Cube {
 				 * cubo es diferente a la cantidad de campos de la tabla
 				 * en la base de datos, entonces hubo un error
 				 * */
-				System.out.println("DIM:" +d.getName() +": props:" +propertyCount);
 				if (columnCount != propertyCount){
 					ret = false;
 					break;
@@ -71,12 +68,10 @@ public class Cube {
 	}
 	
 	public void print() {
-		System.out.println("CUBE: " +name);
 		for(Measure m: measures) {
 			m.print();
 		}
 		for(Entry<String, Dimension> e : dimensions.entrySet()) {
-			System.out.println("DIM: " +e.getKey() + ": " + e.getValue().getName());
 		}
 	}
 }

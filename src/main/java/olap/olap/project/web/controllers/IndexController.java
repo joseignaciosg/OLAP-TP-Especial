@@ -109,7 +109,6 @@ public class IndexController {
 			fr = new FileReader(tmpFile);
 			int inChar;
 			while ((inChar = fr.read()) != -1) {
-				System.out.printf("%c", inChar);
 			}
 			ca.loadMultildimXml(tmpFile);
 		}
@@ -197,7 +196,6 @@ public class IndexController {
 			tableName = entry.getValue()[0];
 			if ("facttable".equals(dimName)) {
 				valid = ca.setFactTableName(tableName);
-				System.out.println("CHANGING FACT TABLE NAME: " + valid);
 			} else {
 				valid = ca.linkDimension(dimName, tableName);
 			}
@@ -243,9 +241,6 @@ public class IndexController {
 					ca.getPropertiesForDimension(tname),
 					ca.getDBFieldsForTable(tname));
 			tables.add(tableList);
-			System.out.println("FIELD LIST: " + ca.getDBFieldsForTable(tname));
-			System.out.println("PROP LIST: "
-					+ ca.getPropertiesForDimension(tname));
 		}
 
 		/* ADDING FACT TABLE */

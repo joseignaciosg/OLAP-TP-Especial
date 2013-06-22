@@ -35,7 +35,6 @@ public class XmlConverter {
 		Element cubeElement = null;
 		while (i.hasNext()) {
 			Element e = i.next();
-			// System.out.println(e.getName());
 			if (e.getName().equals("cubo")) {
 				cubeElement = e;
 			} else if (e.getName().equals("dimension")) {
@@ -155,7 +154,6 @@ public class XmlConverter {
 					throw new RuntimeException("No dimension " + ptr
 							+ " was found");
 				}
-				System.out.println(e.attributeValue("name"));
 				cube.addDimension(e.attributeValue("name"), dim);
 			} else {
 				throw new RuntimeException("invalid " + e.getName()
@@ -166,7 +164,6 @@ public class XmlConverter {
 	}
 
 	private void parseDimension(MultiDim multiDim, Element dimension) {
-		// System.out.println(dimension.attributeValue("name"));
 		Dimension dim = new Dimension(dimension.attributeValue("name"));
 		Iterator<Element> i = dimension.elementIterator();
 		while (i.hasNext()) {
