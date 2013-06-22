@@ -53,8 +53,6 @@ public class CubeApiImpl implements CubeApi {
 		this.factTableName = name;
 		int propCount = getFactTablePropertyCount();
 		int fieldCount = getTableFieldsCount(name);
-		System.out.println("setFactTableName: propCount:" + propCount
-				+ " fieldCount:" + fieldCount);
 		if (propCount != fieldCount) {
 			return false;
 		}
@@ -95,7 +93,6 @@ public class CubeApiImpl implements CubeApi {
 	}
 
 	public Collection<Dimension> getCubeDimensions() {
-		System.out.println(multiDim.getCube().getDimensions().values());
 		return (Collection<Dimension>) multiDim.getCube().getDimensions()
 				.values();
 	}
@@ -186,9 +183,7 @@ public class CubeApiImpl implements CubeApi {
 				if (ftype.equals("int4")) {
 					ftype = "integer";
 				}
-				System.out.println("---------------------");
-				System.out.println("mtype: " + mtype);
-				System.out.println("ftype: " + ftype);
+				
 				if (mtype.equals(ftype)) {
 					m.setName(fieldName);
 					return true;
@@ -203,8 +198,7 @@ public class CubeApiImpl implements CubeApi {
 			if (dimname.equals(propName)) {
 				String ftype = getFieldType(factTableName, fieldName);
 				if (!ftype.equals("integer") && !ftype.equals("int4")) {
-					System.out.println("------·########·---------------");
-					System.out.println("TYPE: " + ftype);
+					
 					return false;
 				} else {
 					Dimension obj = cube.getDimensions().remove(propName);
@@ -309,9 +303,7 @@ public class CubeApiImpl implements CubeApi {
 
 		PreparedStatement statement = conn.prepareStatement(query);
 
-		System.out.println("-----------------------------");
-
-		System.out.println(statement.toString());
+		
 		statement.execute();
 
 	}
@@ -362,9 +354,7 @@ public class CubeApiImpl implements CubeApi {
 			}
 			query += ") \n)";
 			PreparedStatement statement = conn.prepareStatement(query);
-			System.out.println("-----------------------------");
-
-			System.out.println(statement.toString());
+			
 			statement.execute();
 
 		}
@@ -372,7 +362,7 @@ public class CubeApiImpl implements CubeApi {
 
 	public boolean changePropertyName(String tableName, String propName,
 			String fieldName) {
-		System.out.println(tableName);
+		
 		Dimension dim = multiDim.getDimensionValue(tableName);
 		String fieldType = getFieldType(tableName, fieldName);
 		/* tiene que chequar que el tipo sea correcto */
