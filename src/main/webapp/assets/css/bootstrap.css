@@ -972,7 +972,7 @@ input:focus:required:invalid:focus, textarea:focus:required:invalid:focus, selec
   margin-left: 160px;
 }
 .form-horizontal .form-actions {
-  padding-left: 160px;
+  padding-left: 0px;
 }
 table {
   max-width: 100%;

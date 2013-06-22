@@ -1,4 +1,4 @@
-w<%@ page pageEncoding="UTF-8"%>
+<%@ page pageEncoding="UTF-8"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page isELIgnored="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -8,12 +8,13 @@ w<%@ page pageEncoding="UTF-8"%>
 <jsp:include page="../shared/header.jsp"></jsp:include>
 
 <br />
-
-<h1>Olap Project: tu mundo olap</h1>
+<center>
+<h1>Proyecto OLAP - MultimDim a MDX</h1>
 <table>
 	<tr>
 		<td>
-			<div>
+			<div><br/><br/>
+			<center><h4>Elija el XML MultiDim que utilizará para generar el XML de salida MDX</h4></center>
                 <form:form name="uploadxmlform" class="form-horizontal span8 offset2"
                     action="uploadXml" method="POST" enctype="multipart/form-data"
                     commandName="uploadxmlform">
@@ -28,7 +29,7 @@ w<%@ page pageEncoding="UTF-8"%>
                             </div>
                         </div>
                         <div class="form-actions">
-                            <input type="submit" class="btn btn-primary" value="Subir documento " />
+                           <center><input type="submit" class="btn btn-primary" value="Subir documento " /></center>
                         </div>
                     </fieldset>
                 </form:form> 				
@@ -37,5 +38,6 @@ w<%@ page pageEncoding="UTF-8"%>
 
 	</tr>
 </table>
+</center>
 
 <jsp:include page="../shared/footer.jsp"></jsp:include>
