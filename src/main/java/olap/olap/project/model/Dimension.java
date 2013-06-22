@@ -10,10 +10,18 @@ public class Dimension {
 
 	private Set<Hierarchy> hierarchies = new HashSet<Hierarchy>();
 	private Level level;
-	private String name; //temporal
+	private String name; // temporal
 
 	public Dimension(String name) {
 		this(name, null);
+	}
+
+	public String getPKName() {
+		for (Property p : level.getProperties()) {
+			if (p.isPK())
+				return p.getName();
+		}
+		return null;
 	}
 
 	public Dimension(String name, Level level) {
@@ -40,7 +48,7 @@ public class Dimension {
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String newName) {
 		this.name = newName;
 	}
@@ -53,48 +61,50 @@ public class Dimension {
 
 		return qty;
 	}
-	
-	public List<String> getPropertyNames(){
+
+	public List<String> getPropertyNames() {
 		List<String> ret = new ArrayList<String>();
-		for(Property p: level.getProperties()){
-			ret.add(level.getName()+"_"+p.getName());
+		for (Property p : level.getProperties()) {
+			ret.add(level.getName() + "_" + p.getName());
 		}
-		for(Hierarchy h: hierarchies){
+		for (Hierarchy h : hierarchies) {
 			ret.addAll(h.getPropertyNames());
 		}
 		return ret;
 	}
 
-	public boolean changePropertyName(String oldName, String newName, String fieldType){
+	public boolean changePropertyName(String oldName, String newName,
+			String fieldType) {
 		Iterator<Property> iter = this.level.getProperties().iterator();
 		boolean valid = true;
 		while (iter.hasNext()) {
 			Property p = iter.next();
-			String realName = level.getName()+"_"+p.getName();
-			if(realName.equals(oldName)){
-				String ptype = SQLAttribute.valueOf(p.getType().toUpperCase()).toString();
-				System.out.println("######## Property Type: "+ ptype );
-				System.out.println("######## Field    Type: "+ fieldType );
-				if(fieldType.matches("int*.")){
+			String realName = level.getName() + "_" + p.getName();
+			if (realName.equals(oldName)) {
+				String ptype = SQLAttribute.valueOf(p.getType().toUpperCase())
+						.toString();
+				System.out.println("######## Property Type: " + ptype);
+				System.out.println("######## Field    Type: " + fieldType);
+				if (fieldType.matches("int*.")) {
 					fieldType = "integer";
 				}
-				if ( ptype.toLowerCase().equals(fieldType) ){
+				if (ptype.toLowerCase().equals(fieldType)) {
 					p.setName(newName);
 					return true;
-				}else{
+				} else {
 					return false;
 				}
-				
+
 			}
 		}
 		Iterator<Hierarchy> it = this.hierarchies.iterator();
 		while (it.hasNext()) {
 			Hierarchy h = it.next();
-			valid &= h.changePropertyName( oldName,  newName, fieldType);
+			valid &= h.changePropertyName(oldName, newName, fieldType);
 		}
 		return valid;
 	}
-	
+
 	public void print() {
 		System.out.println("DIM: " + name);
 		level.print();
@@ -103,5 +113,4 @@ public class Dimension {
 		}
 	}
 
-	
 }
