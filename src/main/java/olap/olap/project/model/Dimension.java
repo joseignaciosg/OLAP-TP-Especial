@@ -83,8 +83,6 @@ public class Dimension {
 			if (realName.equals(oldName)) {
 				String ptype = SQLAttribute.valueOf(p.getType().toUpperCase())
 						.toString();
-				System.out.println("######## Property Type: " + ptype);
-				System.out.println("######## Field    Type: " + fieldType);
 				if (fieldType.matches("int*.")) {
 					fieldType = "integer";
 				}
@@ -106,7 +104,6 @@ public class Dimension {
 	}
 
 	public void print() {
-		System.out.println("DIM: " + name);
 		level.print();
 		for (Hierarchy h : hierarchies) {
 			h.print();
