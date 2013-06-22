@@ -13,7 +13,8 @@
 <table>
 	<tr>
 		<td>
-			<div>
+			<div><br/><br/>
+			<center><h4>Elija el XML MultiDim que utilizará para generar el XML de salida MDX</h4></center>
                 <form:form name="uploadxmlform" class="form-horizontal span8 offset2"
                     action="uploadXml" method="POST" enctype="multipart/form-data"
                     commandName="uploadxmlform">
