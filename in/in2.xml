@@ -52,7 +52,7 @@
 		<measure name="emision" type="numeric" agg="sum" />
 		<measure name="emisionmala" type="numeric" agg="avg" />
 		<measure name="nube" type="integer" agg="st_union" />
-<!-- 		<dimension name="fabrica" ptr="fabrica" /> -->
+		<dimension name="fabrica" ptr="fabrica" />
 		<dimension name="inicio" ptr="temporal" />
 		<dimension name="fin" ptr="temporal" />
 		<dimension name="sustanciaDim" ptr="sustancia" />

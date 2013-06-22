@@ -95,12 +95,9 @@ public class XmlConverter {
 			measure.addAttribute("column", m.getName());
 			
 		}
-
 //		XMLWriter writer = new XMLWriter(new FileWriter(fileName));
 //		writer.write(out);
 //		writer.close();
-
-
 		return out;
 	}
 

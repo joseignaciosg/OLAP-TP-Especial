@@ -290,10 +290,10 @@ public class IndexController {
 				break;
 			}
 		}
-
 		if (valid) {
 			mav.setViewName("redirect:" + req.getServletPath()
 					+ "/index/manualDownloadMode");
+			
 		} else {
 			mav.addObject("error", "En la tabla "+ tname + 
 					" El tipo de " + propName
