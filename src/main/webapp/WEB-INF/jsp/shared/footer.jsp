@@ -1,8 +1,8 @@
 	</div>	
 	
-	<div id="footer">
+	<div id="footer" style="position: absolute; bottom: 0; width:100%; ">
       <div class="container">
-        <p class="muted credit">Example courtesy <a href="http://martinbean.co.uk">Martin Bean</a> and <a href="http://ryanfait.com/sticky-footer/">Ryan Fait</a>.</p>
+       <p>TP Especial - OLAP - ITBA 2013.</p>
       </div>
     </div>
 </body>
