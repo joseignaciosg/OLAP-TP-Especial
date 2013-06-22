@@ -185,6 +185,7 @@ public class CubeApiImpl implements CubeApi {
 					ftype = "integer";
 				}
 				
+				
 				if (mtype.equals(ftype)) {
 					m.setName(fieldName);
 					return true;
@@ -198,14 +199,9 @@ public class CubeApiImpl implements CubeApi {
 			String dimname = it2.next();
 			if (dimname.equals(propName)) {
 				String ftype = getFieldType(factTableName, fieldName);
-				if (!ftype.equals("integer") && !ftype.equals("int4")) {
-					
-					return false;
-				} else {
-					Dimension obj = cube.getDimensions().remove(propName);
-					cube.getDimensions().put(fieldName, obj);
-					return true;
-				}
+				Dimension obj = cube.getDimensions().remove(propName);
+				cube.getDimensions().put(fieldName, obj);
+				return true;
 			}
 
 		}
