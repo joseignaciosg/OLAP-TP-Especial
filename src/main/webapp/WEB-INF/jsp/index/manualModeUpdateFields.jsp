@@ -44,8 +44,10 @@
 		<br><br>
 		<br> <br>	
 	</c:forEach>
-	<br> <br> <br>
+	<br> <br> 
 	 <input class="btn" type="submit" value="Establecer asignaciones" />
+	 <br> <br>
+	 <br> <br>
 </form:form>
 
 
