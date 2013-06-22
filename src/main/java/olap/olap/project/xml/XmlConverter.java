@@ -109,7 +109,7 @@ public class XmlConverter {
 		if(isAutomatic) {
 			hierarchy.addAttribute("primaryKey", (dimension.getName() + "_" + dimension.getPKName()).toLowerCase());
 		}else {
-			hierarchy.addAttribute("primaryKey", (dimension.getName()).toLowerCase());
+			hierarchy.addAttribute("primaryKey", (dimension.getPKName()).toLowerCase());
 		}
 		Element table = hierarchy.addElement("table");
 		table.addAttribute("name",dimension.getName().toLowerCase());
