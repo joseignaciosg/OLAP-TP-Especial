@@ -74,4 +74,8 @@ public class Cube {
 		for(Entry<String, Dimension> e : dimensions.entrySet()) {
 		}
 	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }

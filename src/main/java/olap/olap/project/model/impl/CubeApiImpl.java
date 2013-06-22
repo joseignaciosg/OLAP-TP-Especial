@@ -50,12 +50,13 @@ public class CubeApiImpl implements CubeApi {
 	}
 
 	public boolean setFactTableName(String name) {
-		this.factTableName = name;
 		int propCount = getFactTablePropertyCount();
 		int fieldCount = getTableFieldsCount(name);
 		if (propCount != fieldCount) {
 			return false;
 		}
+		this.factTableName = name;
+		this.multiDim.getCube().setName(name);
 		return true;
 	}
 
