@@ -106,7 +106,11 @@ public class XmlConverter {
 		Element hierarchy = dim.addElement("Hierarchy");
 		hierarchy.addAttribute("hasAll", "true");
 		hierarchy.addAttribute("name", h.getName());
-		hierarchy.addAttribute("primaryKey", (dimension.getName() + "_" + dimension.getPKName()).toLowerCase());
+		if(isAutomatic) {
+			hierarchy.addAttribute("primaryKey", (dimension.getName() + "_" + dimension.getPKName()).toLowerCase());
+		}else {
+			hierarchy.addAttribute("primaryKey", (dimension.getName()).toLowerCase());
+		}
 		Element table = hierarchy.addElement("table");
 		table.addAttribute("name",dimension.getName().toLowerCase());
 		for (Level l : h.getLevels()) {
