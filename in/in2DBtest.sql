@@ -57,8 +57,8 @@ ALTER TABLE public.fact OWNER TO postgres;
 
 CREATE TABLE factory (
     latitud bigint,
-    longitud bigint,
-    staffqty bigint,
+    longitud integer,
+    staffqty numeric,
     employer_name varchar,
     city_name varchar,
     fact_anual bigint,
@@ -92,9 +92,9 @@ ALTER TABLE public.substance OWNER TO postgres;
 
 CREATE TABLE temporal (
     dia varchar,
-    mes bigint,
-    year bigint,
-    es_bisiesto boolean,
+    mes integer,
+    year integer,
+    es_bisiesto numeric,
     name varchar
 );
 
