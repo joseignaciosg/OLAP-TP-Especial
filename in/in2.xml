@@ -1,33 +1,33 @@
 <multidim>
-<!-- 	<dimension name="Fabrica"> -->
-<!-- 		<level> -->
-<!-- 			<property ID="true" type="numeric">Lat</property> -->
-<!-- 			<property type="numeric">CantEmple</property> -->
-<!-- 			<property ID="true" type="numeric">Lon</property> -->
-<!-- 		</level> -->
-<!-- 		<hierarchy name="Categoria"> -->
-<!-- 			<level name="Empresa" pos="1"> -->
-<!-- 				<property ID="true" type="string"> -->
-<!-- 					Nombre -->
-<!-- 				</property> -->
-<!-- 				<property type="numeric">FactAnual</property> -->
-<!-- 			</level> -->
-<!-- 			<level name="Rubro" pos="2"> -->
-<!-- 				<property ID="true" type="numeric">tipoID</property> -->
-<!-- 				<property type="string">tipoDesc</property> -->
-<!-- 			</level> -->
-<!-- 		</hierarchy> -->
-<!-- 		<hierarchy name="Geo location"> -->
-<!-- 			<level name="Pais" pos="2"> -->
-<!-- 				<property ID="true" type="string">nombre</property> -->
-<!-- 				<property type="geometry">the_geom</property> -->
-<!-- 			</level> -->
-<!-- 			<level name="Ciudad" pos="1"> -->
-<!-- 				<property ID="true" type="string">nombre</property> -->
-<!-- 				<property type="numeric">poblacion</property> -->
-<!-- 			</level> -->
-<!-- 		</hierarchy> -->
-<!-- 	</dimension> -->
+	<dimension name="Fabrica">
+		<level>
+			<property ID="true" type="numeric">Lat</property>
+			<property type="numeric">CantEmple</property>
+			<property ID="true" type="numeric">Lon</property>
+		</level>
+		<hierarchy name="Categoria">
+			<level name="Empresa" pos="1">
+				<property ID="true" type="string">
+					Nombre
+				</property>
+				<property type="numeric">FactAnual</property>
+			</level>
+			<level name="Rubro" pos="2">
+				<property ID="true" type="numeric">tipoID</property>
+				<property type="string">tipoDesc</property>
+			</level>
+		</hierarchy>
+		<hierarchy name="Geo location">
+			<level name="Pais" pos="2">
+				<property ID="true" type="string">nombre</property>
+				<property type="geometry">the_geom</property>
+			</level>
+			<level name="Ciudad" pos="1">
+				<property ID="true" type="string">nombre</property>
+				<property type="numeric">poblacion</property>
+			</level>
+		</hierarchy>
+	</dimension>
 	<dimension name="temporal">
 		<level>
 			<property ID="true" type="timestamp">dia</property>
