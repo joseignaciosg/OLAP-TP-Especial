@@ -1,7 +1,6 @@
 package olap.olap.project.xml;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -20,7 +19,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
 
 @SuppressWarnings("unchecked")
 public class XmlConverter {
@@ -58,7 +56,7 @@ public class XmlConverter {
 	 * no hice las cosas muy bien igual esta x la mitad
 	 */
 
-	public Document generateXml(MultiDim multiDim, String fileName)
+	public Document generateXml(MultiDim multiDim, String fileName, boolean isAutomatic)
 			throws IOException {
 
 		Document out = DocumentHelper.createDocument();
@@ -69,20 +67,20 @@ public class XmlConverter {
 		cubeElem.addAttribute("name", multiDim.getCube().getName());
 		cubeElem.addAttribute("cache", "true");
 		Element cubeTable = cubeElem.addElement("Table");
-		cubeTable.addAttribute("name",multiDim.getCube().getName() + "_fact");
+		cubeTable.addAttribute("name",multiDim.getCube().getName());
 		Cube cube = multiDim.getCube();	
 		for (Entry<String, Dimension> entry : multiDim.getCube()
 				.getDimensions().entrySet()) {
 			Element dim = cubeElem.addElement("Dimension");
 			Dimension dimension = entry.getValue();
 			dim.addAttribute("name", entry.getKey());
-			dim.addAttribute("foreignKey", (entry.getKey() + "_id").toLowerCase());
+			dim.addAttribute("foreignKey", (entry.getKey() + "_" + entry.getValue().getPKName()).toLowerCase());
 			if (dimension.getName().equals("temporal")) {
 			//	dim.addAttribute("type", "TimeDimension");
 			}
 			
 			for (Hierarchy h : dimension.getHierarchies()) {
-				handleHierarchy(dim, h, dimension.getName());
+				handleHierarchy(dim, h, dimension,isAutomatic);
 			}
 		}
 
@@ -101,32 +99,38 @@ public class XmlConverter {
 		return out;
 	}
 
-	private void handleHierarchy(Element dim, Hierarchy h, String dimName) {
+	private void handleHierarchy(Element dim, Hierarchy h, Dimension dimension, boolean isAutomatic) {
 		Element hierarchy = dim.addElement("Hierarchy");
 		hierarchy.addAttribute("hasAll", "true");
 		hierarchy.addAttribute("name", h.getName());
-		hierarchy.addAttribute("primaryKey", (dimName + "_id").toLowerCase());
+		hierarchy.addAttribute("primaryKey", (dimension.getName() + "_" + dimension.getPKName()).toLowerCase());
 		Element table = hierarchy.addElement("table");
-		table.addAttribute("name",dimName.toLowerCase());
+		table.addAttribute("name",dimension.getName().toLowerCase());
 		for (Level l : h.getLevels()) {
 			Element level = hierarchy.addElement("Level");
 			level.addAttribute("name", l.getName());
 			level.addAttribute("column", l.getName().toLowerCase());
 		//	level.addAttribute("levelType", "Regular");
-			handleLevel(level, l);
+			handleLevel(level, l, isAutomatic);
 		}
 	}
 
-	private void handleLevel(Element level, Level l) {
+	private void handleLevel(Element level, Level l, boolean isAutomatic) {
 		
 		for (Property p : l.getProperties()) {
 			if ( p.isPK()) {
 				level.addAttribute("column",(l.getName() + "_" + p.getName()).toLowerCase());
 			}
 			Element property = level.addElement("Property");
-			property.addAttribute("name", l.getName() + "_" + p.getName());
-			property.addAttribute("column", (l.getName() + "_" + p.getName()).toLowerCase());
-			property.addAttribute("type", Attribute.valueOf(p.getType().toUpperCase()).toString());
+			if (isAutomatic) {
+				property.addAttribute("name", l.getName() + "_" + p.getName());
+				property.addAttribute("column", (l.getName() + "_" + p.getName()).toLowerCase());
+				property.addAttribute("type", Attribute.valueOf(p.getType().toUpperCase()).toString());
+			}else {
+				property.addAttribute("name", p.getName());
+				property.addAttribute("column", (p.getName()).toLowerCase());
+				property.addAttribute("type", Attribute.valueOf(p.getType().toUpperCase()).toString());
+			}
 		}
 	}
 
