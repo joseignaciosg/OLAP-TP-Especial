@@ -61,7 +61,7 @@ public class Level {
 				if(fieldType.matches("int*.")){
 					fieldType = "integer";
 				}
-				if ( ptype.equals(fieldType) ){
+				if ( ptype.toLowerCase().equals(fieldType) ){
 					p.setName(newName);
 					return true;
 				}else{
