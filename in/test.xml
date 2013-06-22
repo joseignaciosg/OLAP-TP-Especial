@@ -1,0 +1,109 @@
+<multidim>
+	<dimension name="Fabrica">
+		<level>
+			<property ID="true" type="numeric">
+				Lat
+			</property>
+			<property type="numeric"> CantEmple
+			</property>
+			<property ID="true" type="numeric">
+				Lon
+			</property>
+		</level>
+		<hierarchy name="Categoria">
+			<level name="Empresa" pos="1">
+				<property ID="true" type="string">
+					Nombre
+				</property>
+				<property type="numeric"> FactAnual
+				</property>
+			</level>
+			<level name="Rubro" pos="2">
+				<property ID="true" type="numeric">
+					tipoID
+				</property>
+				<property type="string"> tipoDesc
+				</property>
+			</level>
+		</hierarchy>
+		<hierarchy name="Geo location">
+			<level name="Continente" pos="3">
+				<property ID="true" type="string">
+					nombre
+				</property>
+			</level>
+			<level name="Pais" pos="2">
+				<property ID="true" type="string">
+					nombre
+				</property>
+				<property type="geometry"> the_geom
+				</property>
+			</level>
+			<level name="Ciudad" pos="1">
+				<property ID="true" type="string">
+					nombre
+				</property>
+				<property type="numeric">
+					poblacion
+				</property>
+			</level>
+		</hierarchy>
+	</dimension>
+	<dimension name="temporal">
+		<level>
+			<property ID="true" type="timestamp"> dia
+			</property>
+		</level>
+		<hierarchy name="calendar">
+			<level name="Month" pos="1">
+				<property type="string"> Nombre
+				</property>
+				<property ID="true" type="numeric">
+					Mes
+				</property>
+			</level>
+			<level name="Year" pos="2">
+				<property ID="true" type="numeric"> anio
+				</property>
+				<property type="numeric" ID="false">
+					esBisiesto
+				</property>
+			</level>
+		</hierarchy>
+	</dimension>
+	<dimension name="producto">
+		<level>
+			<property type="string"> nombreProducto
+			</property>	
+			<property ID="true" type="int"> identificador
+			</property>
+		</level>
+		<hierarchy name="Comida">
+			<level name="Month" pos="1">
+				<property type="string"> Nombre
+				</property>
+				<property ID="true" type="numeric">
+					Mes
+				</property>
+			</level>
+		</hierarchy>
+		<hierarchy name="Bebida">
+			<level name="Month" pos="1">
+				<property type="string"> Nombre
+				</property>
+				<property ID="true" type="numeric">
+					Mes
+				</property>
+			</level>
+		</hierarchy>
+	</dimension>
+	<cubo name="contaminacion">
+		<measure name="produccion" type="numeric" agg="sum" />
+		<measure name="perdidas" type="numeric" agg="sum" />
+		<measure name="ganancias" type="numeric" agg="sum" />
+		<dimension name="fabrica" ptr="fabrica" />
+		<dimension name="inicio" ptr="temporal" />
+		<dimension name="fin" ptr="temporal" />
+		<dimension name="productoDim" ptr="producto" />
+	</cubo>
+</multidim>

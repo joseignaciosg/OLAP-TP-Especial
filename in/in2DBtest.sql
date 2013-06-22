@@ -40,23 +40,11 @@ SET default_with_oids = false;
 -- Name: fact; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
-CREATE TABLE fact (
-	emission numeric,
-	bademission numeric,
- 	cloud integer,
-	factory integer,
-	beg integer,
-	endD integer,
-	sustanciaDim integer
-);
-
-
-ALTER TABLE public.fact OWNER TO postgres;
 
 
 
 CREATE TABLE factory (
-    latitud numeric,
+    latitud numeric PRIMARY KEY,
     longitud numeric,
     staffqty numeric,
     company varchar,
@@ -82,7 +70,7 @@ ALTER TABLE public.filtration OWNER TO postgres;
 
 
 CREATE TABLE substance (
-    denominacion varchar
+    denominacion varchar PRIMARY KEY
 );
 
 
@@ -91,7 +79,7 @@ ALTER TABLE public.substance OWNER TO postgres;
 
 
 CREATE TABLE temporal (
-    dia Timestamp,
+    dia Timestamp PRIMARY KEY,
     mes numeric,
     year numeric,
     es_bisiesto numeric,
@@ -102,6 +90,18 @@ CREATE TABLE temporal (
 ALTER TABLE public.temporal OWNER TO postgres;
 
 
+CREATE TABLE fact (
+	emission numeric,
+	bademission numeric,
+ 	cloud integer,
+	factory integer REFERENCES factory(latitud),
+	beg timestamp REFERENCES temporal(dia),
+	endD timestamp REFERENCES temporal(dia),
+	sustanciaDim varchar REFERENCES substance(denominacion)
+);
+
+
+ALTER TABLE public.fact OWNER TO postgres;
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 REVOKE ALL ON SCHEMA public FROM postgres;
 GRANT ALL ON SCHEMA public TO postgres;
