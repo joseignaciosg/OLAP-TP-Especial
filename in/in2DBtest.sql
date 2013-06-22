@@ -91,7 +91,7 @@ ALTER TABLE public.substance OWNER TO postgres;
 
 
 CREATE TABLE temporal (
-    dia varchar,
+    dia Timestamp,
     mes numeric,
     year numeric,
     es_bisiesto numeric,
