@@ -89,7 +89,7 @@ public class CubeApiImpl implements CubeApi {
 		if (!conn.isClosed())
 			conn.commit();
 		connectionManager.closeConnection(conn);
-		return xml.generateXml(multiDim, outFileName);
+		return xml.generateXml(multiDim, outFileName,true);
 	}
 
 	public Collection<Dimension> getCubeDimensions() {
@@ -237,7 +237,7 @@ public class CubeApiImpl implements CubeApi {
 
 	public Document generateMDXManual(String outFileName) throws IOException {
 		XmlConverter xml = new XmlConverter();
-		return xml.generateXml(multiDim, outFileName);
+		return xml.generateXml(multiDim, outFileName,false);
 	}
 
 	private void createFactTable(Connection conn) throws Exception {

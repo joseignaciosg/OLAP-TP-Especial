@@ -56,16 +56,16 @@ ALTER TABLE public.fact OWNER TO postgres;
 
 
 CREATE TABLE factory (
-    latitud bigint,
-    longitud integer,
+    latitud numeric,
+    longitud numeric,
     staffqty numeric,
-    employer_name varchar,
+    company varchar,
     city_name varchar,
-    fact_anual bigint,
-    population bigint,
+    fact_anual numeric,
+    population numeric,
     country_name varchar,
-    gubernant varchar,
-    "TipoIdRubro" varchar,
+    the_geom integer,
+    "TipoIdRubro" numeric,
     "TipoDesc" varchar
 );
 
